@@ -2028,10 +2028,99 @@ const btnAgregarEquivalenciaEditar =
         "btnAgregarEquivalenciaEditar"
     );
 
+const formNuevaEquivalenciaEditar =
+    document.getElementById(
+        "formNuevaEquivalenciaEditar"
+    );
+
+const nuevaMarcaEquivalencia =
+    document.getElementById(
+        "nuevaMarcaEquivalencia"
+    );
+
+const nuevoCodigoEquivalencia =
+    document.getElementById(
+        "nuevoCodigoEquivalencia"
+    );
+
+const btnCancelarNuevaEquivalencia =
+    document.getElementById(
+        "btnCancelarNuevaEquivalencia"
+    );
+
+const btnGuardarNuevaEquivalencia =
+    document.getElementById(
+        "btnGuardarNuevaEquivalencia"
+    );
+
+
+// ======================================================
+// MOSTRAR FORMULARIO
+// ======================================================
 
 if (btnAgregarEquivalenciaEditar) {
 
     btnAgregarEquivalenciaEditar.addEventListener(
+        "click",
+        function () {
+
+            formNuevaEquivalenciaEditar.style.display =
+                "block";
+
+            btnAgregarEquivalenciaEditar.style.display =
+                "none";
+
+            nuevaMarcaEquivalencia.value = "";
+            nuevoCodigoEquivalencia.value = "";
+
+            nuevaMarcaEquivalencia.focus();
+
+        }
+    );
+}
+
+
+// ======================================================
+// CANCELAR
+// ======================================================
+
+if (btnCancelarNuevaEquivalencia) {
+
+    btnCancelarNuevaEquivalencia.addEventListener(
+        "click",
+        function () {
+
+            cerrarFormularioNuevaEquivalencia();
+
+        }
+    );
+}
+
+
+// ======================================================
+// CERRAR FORMULARIO
+// ======================================================
+
+function cerrarFormularioNuevaEquivalencia() {
+
+    formNuevaEquivalenciaEditar.style.display =
+        "none";
+
+    btnAgregarEquivalenciaEditar.style.display =
+        "block";
+
+    nuevaMarcaEquivalencia.value = "";
+    nuevoCodigoEquivalencia.value = "";
+}
+
+
+// ======================================================
+// GUARDAR EQUIVALENCIA
+// ======================================================
+
+if (btnGuardarNuevaEquivalencia) {
+
+    btnGuardarNuevaEquivalencia.addEventListener(
         "click",
         async function () {
 
@@ -2039,6 +2128,18 @@ if (btnAgregarEquivalenciaEditar) {
                 Number(
                     editarIdProducto.value
                 );
+
+
+            const marca =
+                nuevaMarcaEquivalencia.value.trim();
+
+            const codigo =
+                nuevoCodigoEquivalencia.value.trim();
+
+
+            // ------------------------------------------
+            // VALIDAR PRODUCTO
+            // ------------------------------------------
 
             if (!idProducto) {
 
@@ -2050,42 +2151,43 @@ if (btnAgregarEquivalenciaEditar) {
             }
 
 
-            const marca =
-                prompt(
-                    "Ingrese la marca de la equivalencia:"
-                );
+            // ------------------------------------------
+            // VALIDAR MARCA
+            // ------------------------------------------
 
-
-            if (marca === null) {
-                return;
-            }
-
-
-            const codigo =
-                prompt(
-                    "Ingrese el código de la equivalencia:"
-                );
-
-
-            if (codigo === null) {
-                return;
-            }
-
-
-            if (
-                !marca.trim() ||
-                !codigo.trim()
-            ) {
+            if (!marca) {
 
                 alert(
-                    "Debe ingresar la marca y el código."
+                    "Debe ingresar la marca."
                 );
+
+                nuevaMarcaEquivalencia.focus();
+
+                return;
+            }
+
+
+            // ------------------------------------------
+            // VALIDAR CÓDIGO
+            // ------------------------------------------
+
+            if (!codigo) {
+
+                alert(
+                    "Debe ingresar el código."
+                );
+
+                nuevoCodigoEquivalencia.focus();
 
                 return;
             }
 
 
             try {
+
+                // --------------------------------------
+                // ENVIAR A LA API
+                // --------------------------------------
 
                 const respuesta =
                     await fetch(
@@ -2104,18 +2206,26 @@ if (btnAgregarEquivalenciaEditar) {
                                         idProducto,
 
                                     Marca:
-                                        marca.trim(),
+                                        marca,
 
                                     Codigo:
-                                        codigo.trim()
+                                        codigo
                                 })
                         }
                     );
 
 
+                // --------------------------------------
+                // LEER RESPUESTA
+                // --------------------------------------
+
                 const resultado =
                     await respuesta.json();
 
+
+                // --------------------------------------
+                // COMPROBAR ERROR
+                // --------------------------------------
 
                 if (!respuesta.ok) {
 
@@ -2126,10 +2236,16 @@ if (btnAgregarEquivalenciaEditar) {
                 }
 
 
-                alert(
-                    "Equivalencia agregada correctamente."
-                );
+                // --------------------------------------
+                // LIMPIAR FORMULARIO
+                // --------------------------------------
 
+                cerrarFormularioNuevaEquivalencia();
+
+
+                // --------------------------------------
+                // RECARGAR LISTA
+                // --------------------------------------
 
                 await cargarEquivalenciasEditar(
                     idProducto
@@ -2143,10 +2259,36 @@ if (btnAgregarEquivalenciaEditar) {
                     error
                 );
 
+
                 alert(
-                    error.message
+                    error.message ||
+                    "No se pudo agregar la equivalencia."
                 );
             }
+
+        }
+    );
+}
+
+
+// ======================================================
+// ENTER PARA GUARDAR
+// ======================================================
+
+if (nuevoCodigoEquivalencia) {
+
+    nuevoCodigoEquivalencia.addEventListener(
+        "keydown",
+        function (evento) {
+
+            if (evento.key === "Enter") {
+
+                evento.preventDefault();
+
+                btnGuardarNuevaEquivalencia.click();
+
+            }
+
         }
     );
 }
@@ -2719,23 +2861,158 @@ formEditarProducto.addEventListener(
 
 
 
+// ======================================================
+// BUSCADOR CON EQUIVALENCIAS
+// ======================================================
 
-// ======================================================
-// BUSCADOR
-// ======================================================
+let temporizadorBusqueda = null;
 
 buscarProducto.addEventListener(
     "input",
     function () {
 
-        textoBusqueda =
-            this.value;
+        textoBusqueda = this.value.trim();
 
-        aplicarFiltros();
+        clearTimeout(temporizadorBusqueda);
 
+        temporizadorBusqueda = setTimeout(
+            buscarProductos,
+            300
+        );
     }
 );
 
+
+// ======================================================
+// BUSCAR PRODUCTOS EN LA API
+// ======================================================
+
+async function buscarProductos() {
+
+    const termino = textoBusqueda.trim();
+
+    // --------------------------------------------------
+    // SI NO HAY TEXTO, MOSTRAR TODOS LOS PRODUCTOS
+    // --------------------------------------------------
+
+    if (!termino) {
+
+        aplicarFiltros();
+
+        return;
+    }
+
+
+    try {
+
+        // --------------------------------------------------
+        // CONSTRUIR URL
+        // --------------------------------------------------
+
+        const parametros =
+            new URLSearchParams();
+
+        parametros.append(
+            "termino",
+            termino
+        );
+
+
+        // --------------------------------------------------
+        // CONSULTAR API
+        // --------------------------------------------------
+
+        const respuesta =
+            await fetch(
+                `${API_URL}/productos/buscar?${parametros.toString()}`
+            );
+
+
+        if (!respuesta.ok) {
+
+            throw new Error(
+                "No se pudieron buscar los productos."
+            );
+        }
+
+
+        const resultados =
+            await respuesta.json();
+
+
+        // --------------------------------------------------
+        // APLICAR FILTRO DE CATEGORÍA
+        // --------------------------------------------------
+
+        const resultadosFiltrados =
+            resultados.filter(producto => {
+
+                return (
+                    !categoriaSeleccionada
+                    ||
+                    producto.idCategoria
+                        .toString()
+                        === categoriaSeleccionada
+                );
+
+            });
+
+
+        // --------------------------------------------------
+        // MOSTRAR RESULTADOS
+        // --------------------------------------------------
+
+        mostrarProductos(
+            resultadosFiltrados
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Error buscando productos:",
+            error
+        );
+
+
+        document.getElementById(
+            "listaProductos"
+        ).innerHTML = `
+            <p>
+                No se pudieron buscar los productos.
+            </p>
+        `;
+    }
+}
+
+
+// ======================================================
+// FILTRO POR CATEGORÍA
+// ======================================================
+
+filtroCategoria.addEventListener(
+    "change",
+    function () {
+
+        categoriaSeleccionada =
+            this.value;
+
+
+        // Si hay texto de búsqueda,
+        // volver a consultar la API.
+
+        if (textoBusqueda.trim()) {
+
+            buscarProductos();
+
+        } else {
+
+            aplicarFiltros();
+
+        }
+
+    }
+);
 
 // ======================================================
 // FILTRO POR CATEGORÍA

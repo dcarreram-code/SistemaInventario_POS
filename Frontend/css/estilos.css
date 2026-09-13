@@ -497,3 +497,218 @@ main {
         flex: 1;
     }
 }
+
+/* ======================================================
+   FORMULARIO NUEVA EQUIVALENCIA
+   ====================================================== */
+
+.form-nueva-equivalencia {
+    margin-top: 12px;
+    padding: 15px;
+    border: 1px solid #d5d5d5;
+    border-radius: 8px;
+    background: #f7f7f7;
+}
+
+
+.fila-nueva-equivalencia {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+
+.fila-nueva-equivalencia label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+
+.fila-nueva-equivalencia input {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+
+.acciones-nueva-equivalencia {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+
+@media (max-width: 600px) {
+
+    .fila-nueva-equivalencia {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+/* =====================================================
+   EQUIVALENCIAS
+===================================================== */
+
+.lista-equivalencias {
+    margin-top: 15px;
+    border: 1px solid #d9e0e7;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #ffffff;
+}
+
+/* Cada equivalencia */
+.fila-equivalencia {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    padding: 12px 14px;
+    border-bottom: 1px solid #e1e5e9;
+}
+
+/* Quita el separador de la última */
+.fila-equivalencia:last-child {
+    border-bottom: none;
+}
+
+/* Efecto suave al pasar el mouse */
+.fila-equivalencia:hover {
+    background: #f7f9fb;
+}
+
+
+/* Marca y código */
+.datos-equivalencia {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    min-width: 0;
+}
+
+.datos-equivalencia .marca {
+    font-weight: 700;
+    color: #172033;
+}
+
+.datos-equivalencia .codigo {
+    color: #4f5d73;
+    font-family: monospace;
+    font-size: 14px;
+}
+
+
+/* Botón eliminar */
+.btn-eliminar-equivalencia {
+    flex-shrink: 0;
+    width: 38px;
+    height: 34px;
+    padding: 0;
+
+    border: none;
+    border-radius: 6px;
+
+    background: #f1f3f5;
+    color: #777;
+
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    transition: 0.2s;
+}
+
+.btn-eliminar-equivalencia:hover {
+    background: #e9ecef;
+    color: #c0392b;
+}
+
+
+/* Botón agregar */
+.btn-agregar-equivalencia {
+    width: 100%;
+    margin-top: 12px;
+    padding: 11px 15px;
+
+    text-align: center;
+
+    border-radius: 7px;
+}
+
+
+/* Cuando no hay equivalencias */
+.sin-equivalencias {
+    margin: 0;
+    padding: 18px;
+    text-align: center;
+    color: #7a8797;
+    font-size: 14px;
+}
+
+
+/* =====================================================
+   FORMULARIO NUEVA EQUIVALENCIA
+===================================================== */
+
+.form-nueva-equivalencia {
+    margin-top: 12px;
+    padding: 15px;
+
+    border: 1px solid #d5dce3;
+    border-radius: 8px;
+
+    background: #f7f9fb;
+}
+
+.fila-nueva-equivalencia {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.fila-nueva-equivalencia label {
+    display: block;
+    margin-bottom: 5px;
+
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.fila-nueva-equivalencia input {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.acciones-nueva-equivalencia {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+@media (max-width: 600px) {
+
+    .fila-nueva-equivalencia {
+        grid-template-columns: 1fr;
+    }
+
+    .datos-equivalencia {
+        gap: 6px;
+    }
+
+    .fila-equivalencia {
+        padding: 10px;
+    }
+
+}

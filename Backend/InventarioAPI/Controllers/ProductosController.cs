@@ -81,7 +81,90 @@ public async Task<IActionResult> ObtenerProducto(int id)
     return Ok(productoDTO);
 }
 
-        
+
+// ==========================================================
+// GET - BUSCAR PRODUCTOS
+// Busca por nombre, código de barras, descripción,
+// marca de equivalencia o código de equivalencia.
+// ==========================================================
+
+[HttpGet("buscar")]
+public async Task<IActionResult> BuscarProductos(
+    [FromQuery] string? termino)
+{
+    // ------------------------------------------------------
+    // VALIDAR TÉRMINO
+    // ------------------------------------------------------
+
+    if (string.IsNullOrWhiteSpace(termino))
+    {
+        return Ok(new List<ProductoDTO>());
+    }
+
+    termino = termino.Trim();
+
+    // ------------------------------------------------------
+    // BUSCAR PRODUCTOS
+    // ------------------------------------------------------
+
+    var productos = await _context.Productos
+        .Where(p => p.Estado)
+        .Where(p =>
+            EF.Functions.Like(
+                p.Nombre,
+                $"%{termino}%"
+            )
+            ||
+            EF.Functions.Like(
+                p.CodigoBarras,
+                $"%{termino}%"
+            )
+            ||
+            EF.Functions.Like(
+                p.Descripcion ?? "",
+                $"%{termino}%"
+            )
+            ||
+            p.Equivalencias.Any(e =>
+                EF.Functions.Like(
+                    e.Marca,
+                    $"%{termino}%"
+                )
+                ||
+                EF.Functions.Like(
+                    e.Codigo,
+                    $"%{termino}%"
+                )
+            )
+        )
+        .Include(p => p.Categoria)
+        .Select(p => new ProductoDTO
+        {
+            IdProducto = p.IdProducto,
+            CodigoBarras = p.CodigoBarras,
+            Nombre = p.Nombre,
+            IdCategoria = p.IdCategoria,
+            Categoria = p.Categoria != null
+                ? p.Categoria.Nombre
+                : "",
+            PrecioCompra = p.PrecioCompra,
+            PrecioVenta = p.PrecioVenta,
+            Descripcion = p.Descripcion,
+            Imagen = p.Imagen,
+            Stock = p.Stock,
+            FechaRegistro = p.FechaRegistro,
+            Estado = p.Estado
+        })
+        .ToListAsync();
+
+    // ------------------------------------------------------
+    // RESPUESTA
+    // ------------------------------------------------------
+
+    return Ok(productos);
+}
+
+
 [HttpPut("{id}")]
 public async Task<IActionResult> ActualizarProducto(
     int id,
