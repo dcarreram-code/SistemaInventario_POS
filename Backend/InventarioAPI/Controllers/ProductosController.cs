@@ -39,6 +39,9 @@ public async Task<IActionResult> ObtenerProductos()
             Descripcion = p.Descripcion,
             Imagen = p.Imagen,
             Stock = p.Stock,
+            Bodega = p.Bodega,
+            Estanteria = p.Estanteria,
+            Fila = p.Fila,
             FechaRegistro = p.FechaRegistro,
             Estado = p.Estado
         })
@@ -74,6 +77,9 @@ public async Task<IActionResult> ObtenerProducto(int id)
         Descripcion = producto.Descripcion,
         Imagen = producto.Imagen,
         Stock = producto.Stock,
+        Bodega = producto.Bodega,
+        Estanteria = producto.Estanteria,
+        Fila = producto.Fila,
         FechaRegistro = producto.FechaRegistro,
         Estado = producto.Estado
     };
@@ -152,6 +158,9 @@ public async Task<IActionResult> BuscarProductos(
             Descripcion = p.Descripcion,
             Imagen = p.Imagen,
             Stock = p.Stock,
+            Bodega = p.Bodega,
+            Estanteria = p.Estanteria,
+            Fila = p.Fila,
             FechaRegistro = p.FechaRegistro,
             Estado = p.Estado
         })
@@ -238,6 +247,15 @@ public async Task<IActionResult> ActualizarProducto(
 
     producto.Stock =
         productoDTO.Stock;
+
+    producto.Bodega =
+        productoDTO.Bodega?.Trim();
+
+    producto.Estanteria =
+        productoDTO.Estanteria?.Trim();
+
+    producto.Fila =
+        productoDTO.Fila?.Trim();
 
     producto.Estado =
         productoDTO.Estado;
@@ -439,6 +457,9 @@ public async Task<IActionResult> ActualizarProducto(
                 Descripcion = productoDTO.Descripcion,
                 Imagen = rutaImagen,
                 Stock = productoDTO.Stock,
+                Bodega = productoDTO.Bodega?.Trim(),
+                Estanteria = productoDTO.Estanteria?.Trim(),
+                Fila = productoDTO.Fila?.Trim(),
                 Estado = true
             };
 
@@ -534,6 +555,9 @@ public async Task<IActionResult> ObtenerProductosDesactivados()
             Descripcion = p.Descripcion,
             Imagen = p.Imagen,
             Stock = p.Stock,
+            Bodega = p.Bodega,
+            Estanteria = p.Estanteria,
+            Fila = p.Fila,
             FechaRegistro = p.FechaRegistro,
             Estado = p.Estado
         })

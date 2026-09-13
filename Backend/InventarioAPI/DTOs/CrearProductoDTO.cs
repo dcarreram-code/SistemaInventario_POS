@@ -62,5 +62,14 @@ namespace InventarioAPI.DTOs
             ErrorMessage = "El stock no puede ser negativo."
         )]
         public int Stock { get; set; }
+
+        [StringLength(50)]
+        public string? Bodega { get; set; }
+
+        [StringLength(50)]
+        public string? Estanteria { get; set; }
+
+        [StringLength(50)]
+        public string? Fila { get; set; }
     }
 }

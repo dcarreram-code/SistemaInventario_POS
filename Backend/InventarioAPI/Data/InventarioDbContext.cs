@@ -59,6 +59,16 @@ namespace InventarioAPI.Data
 
                 entity.Property(p => p.Descripcion)
                     .HasMaxLength(500);
+
+                entity.Property(p => p.Bodega)
+                    .HasMaxLength(50);
+
+                entity.Property(p => p.Estanteria)
+                    .HasMaxLength(50);
+
+                entity.Property(p => p.Fila)
+                    .HasMaxLength(50);
+
                 entity.Property(p => p.FechaRegistro)
                     .HasDefaultValueSql("GETDATE()");
 
