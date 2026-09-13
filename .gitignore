@@ -1,0 +1,21 @@
+# Visual Studio
+.vs/
+*.user
+*.suo
+
+# .NET
+bin/
+obj/
+
+# VS Code
+.vscode/
+
+# Logs
+*.log
+
+# Variables de entorno
+.env
+
+# Sistema operativo
+.DS_Store
+Thumbs.db

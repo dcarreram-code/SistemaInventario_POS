@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Sistema de Inventario</title>
+
+    <link
+        rel="stylesheet"
+        href="css/estilos.css"
+    >
+
+</head>
+
+
+<body>
+
+
+    <!-- =====================================================
+         ENCABEZADO
+    ====================================================== -->
+
+    <header class="encabezado">
+
+        <div class="contenedor encabezado-contenido">
+
+            <h1>Sistema de Inventario</h1>
+
+
+            <div class="acciones-encabezado">
+
+                <button
+                    id="btnCategorias"
+                    class="btn-secundario"
+                >
+                     Categorías
+                </button>
+
+
+                <button
+                    id="btnProductosDesactivados"
+                    class="btn-secundario"
+                >
+                    🔄 Productos desactivados
+                </button>
+
+
+                <button
+                    id="btnNuevoProducto"
+                    class="btn-principal"
+                >
+                    + Nuevo producto
+                </button>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+
+    <!-- =====================================================
+         CONTENIDO PRINCIPAL
+    ====================================================== -->
+
+    <main class="contenedor">
+
+
+        <!-- =================================================
+             BARRA DE HERRAMIENTAS
+        ================================================== -->
+
+        <section class="barra-herramientas">
+
+            <div class="buscador">
+
+                <input
+                    type="text"
+                    id="buscarProducto"
+                    placeholder="Buscar producto..."
+                >
+
+            </div>
+
+
+            <select id="filtroCategoria">
+
+                <option value="">
+                    Todas las categorías
+                </option>
+
+            </select>
+
+        </section>
+
+
+
+        <!-- =================================================
+             PRODUCTOS
+        ================================================== -->
+
+        <section class="productos">
+
+            <h2>
+                Productos
+            </h2>
+
+
+            <div
+                id="listaProductos"
+                class="lista-productos"
+            >
+
+                <p id="mensajeCarga">
+                    Cargando productos...
+                </p>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+
+    <!-- =====================================================
+         MODAL: NUEVO PRODUCTO
+    ====================================================== -->
+
+    <div
+        id="modalProducto"
+        class="modal"
+    >
+
+        <div class="modal-contenido">
+
+
+            <div class="modal-encabezado">
+
+                <h2>
+                    Nuevo producto
+                </h2>
+
+
+                <button
+                    id="btnCerrarModal"
+                    class="btn-cerrar"
+                >
+                    ×
+                </button>
+
+            </div>
+
+
+
+            <form id="formProducto">
+
+
+                <div class="campo">
+
+                    <label for="codigoBarras">
+                        Código de barras
+                    </label>
+
+
+                    <input
+                        type="text"
+                        id="codigoBarras"
+                        required
+                        minlength="8"
+                        maxlength="14"
+                        pattern="[0-9]{8,14}"
+                        inputmode="numeric"
+                    >
+
+                </div>
+
+
+
+                <div class="campo">
+
+                    <label for="nombre">
+                        Nombre
+                    </label>
+
+
+                    <input
+                        type="text"
+                        id="nombre"
+                        required
+                        minlength="2"
+                        maxlength="150"
+                    >
+
+                </div>
+
+
+
+                <div class="campo">
+
+                    <label for="idCategoria">
+                        Categoría
+                    </label>
+
+
+                    <select
+                        id="idCategoria"
+                        required
+                    >
+
+                        <option value="">
+                            Seleccione una categoría
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+
+                <div class="fila">
+
+
+                    <div class="campo">
+
+                        <label for="precioCompra">
+                            Precio de compra
+                        </label>
+
+
+                        <input
+                            type="number"
+                            id="precioCompra"
+                            min="0"
+                            step="0.01"
+                            required
+                        >
+
+                    </div>
+
+
+
+                    <div class="campo">
+
+                        <label for="precioVenta">
+                            Precio de venta
+                        </label>
+
+
+                        <input
+                            type="number"
+                            id="precioVenta"
+                            min="0"
+                            step="0.01"
+                            required
+                        >
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="campo">
+
+                    <label for="stock">
+                        Stock
+                    </label>
+
+
+                    <input
+                        type="number"
+                        id="stock"
+                        min="0"
+                        step="1"
+                        required
+                    >
+
+                </div>
+
+
+
+                <div class="campo">
+
+                    <label for="descripcion">
+                        Descripción
+                    </label>
+
+
+                    <textarea
+                        id="descripcion"
+                        rows="4"
+                        maxlength="500"
+                    ></textarea>
+
+                </div>
+
+
+
+                <!-- =====================================================
+                     EQUIVALENCIAS
+                ====================================================== -->
+
+                <div class="campo equivalencias-seccion">
+
+                    <label>
+                        🔄 Equivalencias
+                    </label>
+
+                    <small>
+                        Agrega marcas y códigos alternativos para facilitar
+                        la búsqueda del repuesto.
+                    </small>
+
+                    <div
+                        id="listaEquivalencias"
+                        class="lista-equivalencias"
+                    >
+                        <p class="sin-equivalencias">
+                            No hay equivalencias agregadas.
+                        </p>
+                    </div>
+
+                    <button
+                        type="button"
+                        id="btnAgregarEquivalencia"
+                        class="btn-secundario btn-agregar-equivalencia"
+                    >
+                        + Agregar equivalencia
+                    </button>
+
+                </div>
+
+
+                <div class="campo">
+
+                    <label for="imagen">
+                        Imagen del producto
+                    </label>
+
+
+                    <input
+                        type="file"
+                        id="imagen"
+                        accept="image/jpeg,image/png,image/webp"
+                    >
+
+
+                    <small>
+                        Formatos permitidos: JPG, PNG o WEBP.
+                    </small>
+
+                </div>
+
+
+
+                <div class="modal-acciones">
+
+                    <button
+                        type="button"
+                        id="btnCancelar"
+                        class="btn-secundario"
+                    >
+                        Cancelar
+                    </button>
+
+
+                    <button
+                        type="submit"
+                        class="btn-principal"
+                    >
+                        Guardar producto
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         MODAL: EDITAR PRODUCTO
+    ====================================================== -->
+
+    <div
+        id="modalEditarProducto"
+        class="modal"
+    >
+
+        <div class="modal-contenido">
+
+
+            <div class="modal-encabezado">
+
+                <h2>
+                    Editar producto
+                </h2>
+
+
+                <button
+                    id="btnCerrarEditar"
+                    class="btn-cerrar"
+                >
+                    ×
+                </button>
+
+            </div>
+
+
+
+            <form id="formEditarProducto">
+
+
+                <input
+                    type="hidden"
+                    id="editarIdProducto"
+                >
+
+
+
+                <div class="campo">
+
+                    <label for="editarCodigoBarras">
+                        Código de barras
+                    </label>
+
+
+                    <input
+                        type="text"
+                        id="editarCodigoBarras"
+                        required
+                        minlength="8"
+                        maxlength="14"
+                        pattern="[0-9]{8,14}"
+                        inputmode="numeric"
+                    >
+
+                </div>
+
+
+
+                <div class="campo">
+
+                    <label for="editarNombre">
+                        Nombre
+                    </label>
+
+
+                    <input
+                        type="text"
+                        id="editarNombre"
+                        required
+                        minlength="2"
+                        maxlength="150"
+                    >
+
+                </div>
+
+
+
+                <div class="campo">
+
+                    <label for="editarCategoria">
+                        Categoría
+                    </label>
+
+
+                    <select
+                        id="editarCategoria"
+                        required
+                    >
+
+                        <option value="">
+                            Seleccione una categoría
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+
+                <div class="fila">
+
+
+                    <div class="campo">
+
+                        <label for="editarPrecioCompra">
+                            Precio de compra
+                        </label>
+
+
+                        <input
+                            type="number"
+                            id="editarPrecioCompra"
+                            min="0"
+                            step="0.01"
+                            required
+                        >
+
+                    </div>
+
+
+
+                    <div class="campo">
+
+                        <label for="editarPrecioVenta">
+                            Precio de venta
+                        </label>
+
+
+                        <input
+                            type="number"
+                            id="editarPrecioVenta"
+                            min="0"
+                            step="0.01"
+                            required
+                        >
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="campo">
+
+                    <label for="editarStock">
+                        Stock
+                    </label>
+
+
+                    <input
+                        type="number"
+                        id="editarStock"
+                        min="0"
+                        step="1"
+                        required
+                    >
+
+                </div>
+
+
+
+                <div class="campo">
+
+                    <label for="editarDescripcion">
+                        Descripción
+                    </label>
+
+
+                    <textarea
+                        id="editarDescripcion"
+                        rows="4"
+                        maxlength="500"
+                    ></textarea>
+
+                </div>
+
+
+
+                <!-- =====================================================
+                     EQUIVALENCIAS
+                ====================================================== -->
+
+                <div class="campo equivalencias-seccion">
+
+                    <label>
+                        🔄 Equivalencias
+                    </label>
+
+                    <small>
+                        Administra las marcas y códigos alternativos
+                        de este producto.
+                    </small>
+
+                    <div
+                        id="listaEquivalenciasEditar"
+                        class="lista-equivalencias"
+                    >
+                        <p class="sin-equivalencias">
+                            Cargando equivalencias...
+                        </p>
+                    </div>
+
+                    <button
+                        type="button"
+                        id="btnAgregarEquivalenciaEditar"
+                        class="btn-secundario btn-agregar-equivalencia"
+                    >
+                        + Agregar equivalencia
+                    </button>
+
+                </div>
+
+
+                <div class="campo">
+
+                    <label>
+                        Imagen actual
+                    </label>
+
+
+                    <div id="imagenActual">
+                        No hay imagen
+                    </div>
+
+                </div>
+
+
+
+                <div class="campo">
+
+                    <label for="editarImagen">
+                        Nueva imagen
+                    </label>
+
+
+                    <input
+                        type="file"
+                        id="editarImagen"
+                        accept="image/jpeg,image/png,image/webp"
+                    >
+
+
+                    <small>
+                        Déjalo vacío para conservar la imagen actual.
+                    </small>
+
+                </div>
+
+
+
+                <div class="modal-acciones">
+
+                    <button
+                        type="button"
+                        id="btnCancelarEditar"
+                        class="btn-secundario"
+                    >
+                        Cancelar
+                    </button>
+
+
+                    <button
+                        type="submit"
+                        class="btn-principal"
+                    >
+                        Actualizar producto
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         MODAL: CATEGORÍAS
+    ====================================================== -->
+
+    <div
+        id="modalCategorias"
+        class="modal"
+    >
+
+        <div class="modal-contenido">
+
+
+            <div class="modal-encabezado">
+
+                <h2>
+                    Categorías
+                </h2>
+
+
+                <button
+                    id="btnCerrarCategorias"
+                    class="btn-cerrar"
+                >
+                    ×
+                </button>
+
+            </div>
+
+
+            <div class="modal-acciones">
+
+                <button
+                    id="btnNuevaCategoria"
+                    class="btn-principal"
+                >
+                    + Nueva categoría
+                </button>
+
+
+                <button
+                    id="btnCategoriasDesactivadas"
+                    class="btn-secundario"
+                >
+                    🔄 Desactivadas
+                </button>
+
+            </div>
+
+
+            <div
+                id="listaCategorias"
+                class="lista-categorias"
+            >
+
+                <p>
+                    Cargando categorías...
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         MODAL: NUEVA CATEGORÍA
+    ====================================================== -->
+
+    <div
+        id="modalNuevaCategoria"
+        class="modal"
+    >
+
+        <div class="modal-contenido">
+
+
+            <div class="modal-encabezado">
+
+                <h2>
+                    Nueva categoría
+                </h2>
+
+
+                <button
+                    id="btnCerrarNuevaCategoria"
+                    class="btn-cerrar"
+                >
+                    ×
+                </button>
+
+            </div>
+
+
+
+            <form id="formCategoria">
+
+
+                <div class="campo">
+
+                    <label for="nombreCategoria">
+                        Nombre
+                    </label>
+
+
+                    <input
+                        type="text"
+                        id="nombreCategoria"
+                        required
+                        minlength="2"
+                        maxlength="100"
+                    >
+
+                </div>
+
+
+
+                <div class="campo">
+
+                    <label for="descripcionCategoria">
+                        Descripción
+                    </label>
+
+
+                    <textarea
+                        id="descripcionCategoria"
+                        rows="4"
+                        maxlength="250"
+                    ></textarea>
+
+                </div>
+
+
+
+                <div class="modal-acciones">
+
+                    <button
+                        type="button"
+                        id="btnCancelarCategoria"
+                        class="btn-secundario"
+                    >
+                        Cancelar
+                    </button>
+
+
+                    <button
+                        type="submit"
+                        class="btn-principal"
+                    >
+                        Guardar categoría
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         MODAL: EDITAR CATEGORÍA
+    ====================================================== -->
+
+    <div
+        id="modalEditarCategoria"
+        class="modal"
+    >
+
+        <div class="modal-contenido">
+
+
+            <div class="modal-encabezado">
+
+                <h2>
+                    Editar categoría
+                </h2>
+
+
+                <button
+                    id="btnCerrarEditarCategoria"
+                    class="btn-cerrar"
+                >
+                    ×
+                </button>
+
+            </div>
+
+
+
+            <form id="formEditarCategoria">
+
+
+                <input
+                    type="hidden"
+                    id="editarIdCategoria"
+                >
+
+
+
+                <div class="campo">
+
+                    <label for="editarNombreCategoria">
+                        Nombre
+                    </label>
+
+
+                    <input
+                        type="text"
+                        id="editarNombreCategoria"
+                        required
+                        minlength="2"
+                        maxlength="100"
+                    >
+
+                </div>
+
+
+
+                <div class="campo">
+
+                    <label for="editarDescripcionCategoria">
+                        Descripción
+                    </label>
+
+
+                    <textarea
+                        id="editarDescripcionCategoria"
+                        rows="4"
+                        maxlength="250"
+                    ></textarea>
+
+                </div>
+
+
+
+                <div class="modal-acciones">
+
+                    <button
+                        type="button"
+                        id="btnCancelarEditarCategoria"
+                        class="btn-secundario"
+                    >
+                        Cancelar
+                    </button>
+
+
+                    <button
+                        type="submit"
+                        class="btn-principal"
+                    >
+                        Actualizar categoría
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         JAVASCRIPT
+    ====================================================== -->
+
+    <script src="js/app.js"></script>
+
+</body>
+
+</html>
