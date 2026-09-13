@@ -315,11 +315,92 @@
                         🔄 Equivalencias
                     </label>
 
+
                     <small>
                         Agrega marcas y códigos alternativos para
                         facilitar la búsqueda del repuesto.
                     </small>
 
+
+                    <!-- FORMULARIO NUEVA EQUIVALENCIA -->
+
+                    <div
+                        id="formNuevaEquivalenciaProducto"
+                        class="form-nueva-equivalencia"
+                        style="display: none;"
+                    >
+
+                        <div class="fila-nueva-equivalencia">
+
+
+                            <div>
+
+                                <label
+                                    for="nuevaMarcaEquivalenciaProducto"
+                                >
+                                    Marca
+                                </label>
+
+
+                                <input
+                                    type="text"
+                                    id="nuevaMarcaEquivalenciaProducto"
+                                    placeholder="Ej. FRAM"
+                                    maxlength="100"
+                                >
+
+                            </div>
+
+
+
+                            <div>
+
+                                <label
+                                    for="nuevoCodigoEquivalenciaProducto"
+                                >
+                                    Código
+                                </label>
+
+
+                                <input
+                                    type="text"
+                                    id="nuevoCodigoEquivalenciaProducto"
+                                    placeholder="Ej. PH7399"
+                                    maxlength="100"
+                                >
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="acciones-nueva-equivalencia">
+
+
+                            <button
+                                type="button"
+                                id="btnCancelarNuevaEquivalenciaProducto"
+                                class="btn-secundario"
+                            >
+                                Cancelar
+                            </button>
+
+
+                            <button
+                                type="button"
+                                id="btnGuardarNuevaEquivalenciaProducto"
+                                class="btn-principal"
+                            >
+                                + Agregar
+                            </button>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- LISTA -->
 
                     <div
                         id="listaEquivalencias"
@@ -332,6 +413,9 @@
 
                     </div>
 
+
+
+                    <!-- BOTÓN -->
 
                     <button
                         type="button"
@@ -586,15 +670,14 @@
                         🔄 Equivalencias
                     </label>
 
+
                     <small>
                         Administra las marcas y códigos alternativos
                         de este producto.
                     </small>
 
 
-                    <!-- =============================================
-                         FORMULARIO NUEVA EQUIVALENCIA
-                    ============================================== -->
+                    <!-- FORMULARIO NUEVA EQUIVALENCIA -->
 
                     <div
                         id="formNuevaEquivalenciaEditar"
@@ -607,7 +690,9 @@
 
                             <div>
 
-                                <label for="nuevaMarcaEquivalencia">
+                                <label
+                                    for="nuevaMarcaEquivalencia"
+                                >
                                     Marca
                                 </label>
 
@@ -625,7 +710,9 @@
 
                             <div>
 
-                                <label for="nuevoCodigoEquivalencia">
+                                <label
+                                    for="nuevoCodigoEquivalencia"
+                                >
                                     Código
                                 </label>
 
@@ -668,9 +755,7 @@
 
 
 
-                    <!-- =============================================
-                         LISTA DE EQUIVALENCIAS
-                    ============================================== -->
+                    <!-- LISTA DE EQUIVALENCIAS -->
 
                     <div
                         id="listaEquivalenciasEditar"
@@ -685,9 +770,7 @@
 
 
 
-                    <!-- =============================================
-                         BOTÓN AGREGAR
-                    ============================================== -->
+                    <!-- BOTÓN AGREGAR -->
 
                     <button
                         type="button"
@@ -700,6 +783,10 @@
                 </div>
 
 
+
+                <!-- =================================================
+                     IMAGEN ACTUAL
+                ================================================== -->
 
                 <div class="campo">
 

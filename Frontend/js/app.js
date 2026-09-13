@@ -172,7 +172,7 @@ document.addEventListener(
 
         const boton =
             evento.target.closest(
-                ".btn-eliminar-equivalencia"
+                ".btn-eliminar-equivalencia[data-indice]"
             );
 
         if (!boton) {
@@ -3585,7 +3585,7 @@ async function reactivarProducto(id) {
 
 
 // ======================================================
-// BOTÓN: AGREGAR EQUIVALENCIA
+// NUEVA EQUIVALENCIA - NUEVO PRODUCTO
 // ======================================================
 
 const btnAgregarEquivalencia =
@@ -3593,6 +3593,35 @@ const btnAgregarEquivalencia =
         "btnAgregarEquivalencia"
     );
 
+const formNuevaEquivalenciaProducto =
+    document.getElementById(
+        "formNuevaEquivalenciaProducto"
+    );
+
+const nuevaMarcaEquivalenciaProducto =
+    document.getElementById(
+        "nuevaMarcaEquivalenciaProducto"
+    );
+
+const nuevoCodigoEquivalenciaProducto =
+    document.getElementById(
+        "nuevoCodigoEquivalenciaProducto"
+    );
+
+const btnCancelarNuevaEquivalenciaProducto =
+    document.getElementById(
+        "btnCancelarNuevaEquivalenciaProducto"
+    );
+
+const btnGuardarNuevaEquivalenciaProducto =
+    document.getElementById(
+        "btnGuardarNuevaEquivalenciaProducto"
+    );
+
+
+// ======================================================
+// MOSTRAR FORMULARIO
+// ======================================================
 
 if (btnAgregarEquivalencia) {
 
@@ -3600,34 +3629,138 @@ if (btnAgregarEquivalencia) {
         "click",
         function () {
 
-            const marca =
-                prompt(
-                    "Ingrese la marca de la equivalencia:"
-                );
+            formNuevaEquivalenciaProducto.style.display =
+                "block";
 
+            btnAgregarEquivalencia.style.display =
+                "none";
 
-            if (marca === null) {
-                return;
-            }
+            nuevaMarcaEquivalenciaProducto.value = "";
+            nuevoCodigoEquivalenciaProducto.value = "";
 
-
-            const codigo =
-                prompt(
-                    "Ingrese el código de la equivalencia:"
-                );
-
-
-            if (codigo === null) {
-                return;
-            }
-
-
-            agregarEquivalenciaPendiente(
-                marca,
-                codigo
-            );
+            nuevaMarcaEquivalenciaProducto.focus();
         }
     );
+
+}
+
+
+// ======================================================
+// CERRAR FORMULARIO
+// ======================================================
+
+function cerrarFormularioNuevaEquivalenciaProducto() {
+
+    formNuevaEquivalenciaProducto.style.display =
+        "none";
+
+    btnAgregarEquivalencia.style.display =
+        "block";
+
+    nuevaMarcaEquivalenciaProducto.value = "";
+    nuevoCodigoEquivalenciaProducto.value = "";
+}
+
+
+// ======================================================
+// CANCELAR
+// ======================================================
+
+if (btnCancelarNuevaEquivalenciaProducto) {
+
+    btnCancelarNuevaEquivalenciaProducto.addEventListener(
+        "click",
+        function () {
+
+            cerrarFormularioNuevaEquivalenciaProducto();
+
+        }
+    );
+
+}
+
+
+// ======================================================
+// GUARDAR EQUIVALENCIA
+// ======================================================
+
+if (btnGuardarNuevaEquivalenciaProducto) {
+
+    btnGuardarNuevaEquivalenciaProducto.addEventListener(
+        "click",
+        function () {
+
+            const marca =
+                nuevaMarcaEquivalenciaProducto.value.trim();
+
+            const codigo =
+                nuevoCodigoEquivalenciaProducto.value.trim();
+
+
+            if (!marca) {
+
+                alert(
+                    "Debe ingresar la marca."
+                );
+
+                nuevaMarcaEquivalenciaProducto.focus();
+
+                return;
+            }
+
+
+            if (!codigo) {
+
+                alert(
+                    "Debe ingresar el código."
+                );
+
+                nuevoCodigoEquivalenciaProducto.focus();
+
+                return;
+            }
+
+
+            const agregada =
+                agregarEquivalenciaPendiente(
+                    marca,
+                    codigo
+                );
+
+
+            if (agregada) {
+
+                cerrarFormularioNuevaEquivalenciaProducto();
+
+            }
+
+        }
+    );
+
+}
+
+
+// ======================================================
+// ENTER EN EL CÓDIGO
+// ======================================================
+
+if (nuevoCodigoEquivalenciaProducto) {
+
+    nuevoCodigoEquivalenciaProducto.addEventListener(
+        "keydown",
+        function (evento) {
+
+            if (evento.key === "Enter") {
+
+                evento.preventDefault();
+
+                btnGuardarNuevaEquivalenciaProducto.click();
+
+            }
+
+        }
+    );
+
 }
 
 // ======================================================
