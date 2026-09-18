@@ -1812,7 +1812,14 @@ async function reactivarProducto(id) {
         );
 
 
-        // Volver a mostrar productos activos
+        // Regresar automáticamente a la vista normal
+        btnVolverProductos.style.display = "none";
+        btnProductosDesactivados.style.display = "inline-block";
+
+        textoBusqueda = "";
+        categoriaSeleccionada = "";
+        buscarProducto.value = "";
+        filtroCategoria.value = "";
 
         await cargarProductos();
 
@@ -1873,10 +1880,39 @@ const btnProductosDesactivados =
         "btnProductosDesactivados"
     );
 
+const btnVolverProductos =
+    document.getElementById(
+        "btnVolverProductos"
+    );
 
 btnProductosDesactivados.addEventListener(
     "click",
-    cargarProductosDesactivados
+    function () {
+        btnProductosDesactivados.style.display = "none";
+        btnVolverProductos.style.display = "inline-block";
+
+        textoBusqueda = "";
+        categoriaSeleccionada = "";
+        buscarProducto.value = "";
+        filtroCategoria.value = "";
+
+        cargarProductosDesactivados();
+    }
+);
+
+btnVolverProductos.addEventListener(
+    "click",
+    function () {
+        btnVolverProductos.style.display = "none";
+        btnProductosDesactivados.style.display = "inline-block";
+
+        textoBusqueda = "";
+        categoriaSeleccionada = "";
+        buscarProducto.value = "";
+        filtroCategoria.value = "";
+
+        cargarProductos();
+    }
 );
 
 

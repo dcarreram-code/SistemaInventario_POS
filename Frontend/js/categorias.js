@@ -25,6 +25,11 @@ const btnCategoriasDesactivadas =
         "btnCategoriasDesactivadas"
     );
 
+const btnVolverCategorias =
+    document.getElementById(
+        "btnVolverCategorias"
+    );
+
 const listaCategorias =
     document.getElementById("listaCategorias");
 
@@ -77,6 +82,15 @@ function cerrarModalCategorias() {
 btnCategorias.addEventListener(
     "click",
     abrirModalCategorias
+);
+
+btnVolverCategorias.addEventListener(
+    "click",
+    function () {
+        btnVolverCategorias.style.display = "none";
+        btnCategoriasDesactivadas.style.display = "inline-block";
+        cargarCategoriasGestion();
+    }
 );
 
 
@@ -677,7 +691,11 @@ listaCategorias.addEventListener(
 
 btnCategoriasDesactivadas.addEventListener(
     "click",
-    cargarCategoriasDesactivadas
+    function () {
+        btnCategoriasDesactivadas.style.display = "none";
+        btnVolverCategorias.style.display = "inline-block";
+        cargarCategoriasDesactivadas();
+    }
 );
 
 
@@ -890,7 +908,5 @@ listaCategorias.addEventListener(
 
     }
 );
-
-
 
 

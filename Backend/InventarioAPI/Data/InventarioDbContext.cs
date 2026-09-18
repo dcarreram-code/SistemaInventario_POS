@@ -16,6 +16,12 @@ namespace InventarioAPI.Data
 
         public DbSet<Equivalencia> Equivalencias { get; set; }
 
+        public DbSet<Venta> Ventas { get; set; }
+
+        public DbSet<DetalleVenta> DetallesVenta { get; set; }
+
+        public DbSet<MovimientoInventario> MovimientosInventario { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -117,6 +123,41 @@ namespace InventarioAPI.Data
                     e.Codigo
                 })
                 .IsUnique();            
+
+            modelBuilder.Entity<Venta>(entity =>
+            {
+                entity.ToTable("Ventas");
+                entity.HasKey(v => v.IdVenta);
+                entity.Property(v => v.Vehiculo).HasMaxLength(100).IsRequired();
+                entity.Property(v => v.Placa).HasMaxLength(20);
+                entity.Property(v => v.Observaciones).HasMaxLength(500);
+                entity.Property(v => v.Estado).HasMaxLength(20).IsRequired();
+                entity.Property(v => v.Total).HasPrecision(10, 2);
+                entity.HasIndex(v => v.Estado);
+            });
+
+            modelBuilder.Entity<DetalleVenta>(entity =>
+            {
+                entity.ToTable("DetallesVenta");
+                entity.HasKey(d => d.IdDetalleVenta);
+                entity.Property(d => d.NombreProducto).HasMaxLength(150).IsRequired();
+                entity.Property(d => d.CodigoBarras).HasMaxLength(50).IsRequired();
+                entity.Property(d => d.PrecioUnitario).HasPrecision(10, 2);
+                entity.Property(d => d.CostoUnitario).HasPrecision(10, 2);
+                entity.Property(d => d.Subtotal).HasPrecision(10, 2);
+                entity.HasOne(d => d.Venta).WithMany(v => v.Detalles).HasForeignKey(d => d.IdVenta).OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(d => d.Producto).WithMany().HasForeignKey(d => d.IdProducto).OnDelete(DeleteBehavior.Restrict);
+            });
+
+            modelBuilder.Entity<MovimientoInventario>(entity =>
+            {
+                entity.ToTable("MovimientosInventario");
+                entity.HasKey(m => m.IdMovimientoInventario);
+                entity.Property(m => m.Tipo).HasMaxLength(30).IsRequired();
+                entity.Property(m => m.Descripcion).HasMaxLength(250);
+                entity.HasOne(m => m.Producto).WithMany().HasForeignKey(m => m.IdProducto).OnDelete(DeleteBehavior.Restrict);
+                entity.HasOne(m => m.Venta).WithMany(v => v.Movimientos).HasForeignKey(m => m.IdVenta).OnDelete(DeleteBehavior.Restrict);
+            });
 
 
             

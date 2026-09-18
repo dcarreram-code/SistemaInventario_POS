@@ -48,7 +48,11 @@
                     id="btnProductosDesactivados"
                     class="btn-secundario"
                 >
-                    🔄 Productos desactivados
+                     Productos desactivados
+                </button>
+
+                <button id="btnVolverProductos" class="btn-secundario" style="display: none;">
+                    ← Volver a productos
                 </button>
 
 
@@ -58,6 +62,24 @@
                 >
                     + Nuevo producto
                 </button>
+
+                <button
+                    id="btnVentas"
+                    class="btn-principal"
+                >
+                    Ventas abiertas
+                </button>
+
+                <button
+                    id="btnHistorialVentas"
+                    class="btn-secundario"
+                >
+                    Historial de ventas
+                </button>
+
+                <button id="btnReportesVentas" class="btn-secundario">Reporte de ventas</button>
+
+                <button id="btnBuscarVentas" class="btn-secundario">Buscar ventas</button>
 
             </div>
 
@@ -130,6 +152,80 @@
     </main>
 
 
+
+    <div id="modalReportesVentas" class="modal">
+        <div class="modal-contenido modal-reporte-ventas">
+            <div class="modal-encabezado">
+                <h2>Reporte de ventas</h2>
+                <button id="btnCerrarReportesVentas" class="btn-cerrar">&times;</button>
+            </div>
+
+            <form id="formReporteVentas" class="form-reporte-ventas">
+                <label>Desde <input id="reporteDesde" type="date" required></label>
+                <label>Hasta <input id="reporteHasta" type="date" required></label>
+                <button class="btn-principal" type="submit">Generar reporte</button>
+            </form>
+
+            <div id="resultadoReporteVentas" class="resultado-reporte"></div>
+        </div>
+    </div>
+
+    <div id="modalBusquedaVentas" class="modal">
+        <div class="modal-contenido">
+            <div class="modal-encabezado">
+                <h2>Buscar ventas</h2>
+                <button id="btnCerrarBusquedaVentas" class="btn-cerrar">&times;</button>
+            </div>
+
+            <div class="busqueda-ventas">
+                <input id="buscarVentaVehiculo" placeholder="Buscar por vehículo o placa">
+                <button id="btnEjecutarBusquedaVentas" type="button" class="btn-secundario">Buscar</button>
+            </div>
+
+            <div id="resultadosBusquedaVentas" class="lista-ventas"></div>
+        </div>
+    </div>
+
+    <div id="modalVentas" class="modal">
+        <div class="modal-contenido modal-ventas">
+            <div class="modal-encabezado">
+                <h2 id="tituloModalVentas">Ventas abiertas</h2>
+                <button id="btnCerrarVentas" class="btn-cerrar">&times;</button>
+            </div>
+
+            <div class="ventas-layout">
+                <aside class="panel-ventas">
+                    <button id="btnNuevaVenta" class="btn-principal">+ Nueva cuenta</button>
+                    <div id="listaVentasAbiertas" class="lista-ventas"></div>
+                </aside>
+
+                <section class="detalle-venta">
+                    <form id="formNuevaVenta" class="form-venta" style="display: none;">
+                        <input id="ventaVehiculo" maxlength="100" placeholder="Vehiculo o cliente" required>
+                        <input id="ventaPlaca" maxlength="20" placeholder="Placa- Nombre del Cliente (opcional)">
+                        <textarea id="ventaObservaciones" maxlength="500" placeholder="Observaciones (opcional)"></textarea>
+                        <button class="btn-principal" type="submit">Abrir cuenta</button>
+                    </form>
+
+                    <div id="contenidoVenta" style="display: none;">
+                        <h3 id="tituloVenta"></h3>
+                        <div class="agregar-producto-venta">
+                            <input id="buscarProductoVenta" placeholder="Buscar producto o equivalencia">
+                            <input id="cantidadProductoVenta" type="number" min="1" value="1">
+                            <div id="resultadosProductosVenta" class="resultados-venta"></div>
+                        </div>
+                        <div id="detallesVenta" class="detalles-venta"></div>
+                        <p class="total-venta">Total: <strong id="totalVenta">Q0.00</strong></p>
+                        <div class="acciones-venta">
+                            <button id="btnAnularVenta" type="button" class="btn-desactivar" style="display: none;">Anular venta</button>
+                            <button id="btnCancelarVenta" type="button" class="btn-secundario">Cancelar cuenta</button>
+                            <button id="btnConcretarVenta" type="button" class="btn-principal">Cobrar y descontar stock</button>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
 
     <!-- =====================================================
          MODAL: NUEVO PRODUCTO
@@ -980,6 +1076,10 @@
                     🔄 Desactivadas
                 </button>
 
+                <button id="btnVolverCategorias" class="btn-secundario" style="display: none;">
+                    ← Volver a categorías
+                </button>
+
             </div>
 
 
@@ -1209,6 +1309,7 @@
     <script src="js/categorias.js"></script>
     <script src="js/productos.js"></script>
     <script src="js/equivalencias.js"></script>
+    <script src="js/ventas.js"></script>
     <script src="js/app.js"></script>
 
 </body>
