@@ -79,7 +79,7 @@
 
                 <button id="btnReportesVentas" class="btn-secundario">Reporte de ventas</button>
 
-                <button id="btnBuscarVentas" class="btn-secundario">Buscar ventas</button>
+                <button id="btnBuscarVentas" class="btn-secundario" style="display:none;">Buscar ventas</button>
 
             </div>
 
@@ -179,7 +179,7 @@
 
             <div class="busqueda-ventas">
                 <input id="buscarVentaVehiculo" placeholder="Buscar por vehículo o placa">
-                <button id="btnEjecutarBusquedaVentas" type="button" class="btn-secundario">Buscar</button>
+                <button id="btnEjecutarBusquedaVentas" type="button" class="btn-principal">Buscar</button>
             </div>
 
             <div id="resultadosBusquedaVentas" class="lista-ventas"></div>
@@ -191,6 +191,23 @@
             <div class="modal-encabezado">
                 <h2 id="tituloModalVentas">Ventas abiertas</h2>
                 <button id="btnCerrarVentas" class="btn-cerrar">&times;</button>
+            </div>
+
+            <div id="filtrosHistorialVentas" class="filtros-historial-ventas" style="display: none;">
+                <div class="campo-filtro-historial">
+                    <label for="historialDesde">Desde</label>
+                    <input id="historialDesde" type="date">
+                </div>
+                <div class="campo-filtro-historial">
+                    <label for="historialHasta">Hasta</label>
+                    <input id="historialHasta" type="date">
+                </div>
+                <div class="campo-filtro-historial filtro-historial-busqueda">
+                    <label for="historialBusqueda">Vehículo o placa</label>
+                    <input id="historialBusqueda" type="text" placeholder="Buscar vehículo o placa">
+                </div>
+                <button id="btnFiltrarHistorial" type="button" class="btn-principal">Filtrar</button>
+                <button id="btnLimpiarHistorial" type="button" class="btn-secundario">Limpiar</button>
             </div>
 
             <div class="ventas-layout">

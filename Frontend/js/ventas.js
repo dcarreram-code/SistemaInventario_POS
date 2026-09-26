@@ -38,41 +38,182 @@ async function cargarVentasAbiertas() {
 }
 
 async function cargarHistorialVentas() {
-    const ventas = await respuestaVenta("/ventas/historial");
-    listaVentasAbiertas.innerHTML = ventas.length ? "" : "<p>No hay ventas cobradas.</p>";
+    const desde = document.getElementById("historialDesde");
+    const hasta = document.getElementById("historialHasta");
+    const busqueda = document.getElementById("historialBusqueda");
+    const parametros = new URLSearchParams();
+
+    if (desde?.value) parametros.set("desde", desde.value);
+    if (hasta?.value) parametros.set("hasta", hasta.value);
+    if (busqueda?.value.trim()) parametros.set("vehiculo", busqueda.value.trim());
+
+    const query = parametros.toString();
+    const ventas = await respuestaVenta(
+        `/ventas/historial${query ? `?${query}` : ""}`
+    );
+
+    listaVentasAbiertas.innerHTML = "";
+
+    if (!ventas.length) {
+        listaVentasAbiertas.innerHTML = `
+            <div class="historial-vacio">
+                <strong>No se encontraron ventas</strong>
+                <span>Prueba con otro rango de fechas o vehículo/placa.</span>
+            </div>`;
+        return;
+    }
+
+    const grupos = {};
+
     ventas.forEach(venta => {
-        const boton = document.createElement("button");
-        boton.type = "button";
-        boton.className = "tarjeta-venta";
-        boton.dataset.id = venta.idVenta;
-        const fecha = new Date(venta.fechaCierre).toLocaleString();
-        boton.innerHTML = `<strong>${venta.vehiculo}</strong><span>${venta.placa || "Sin placa"}</span><small>${fecha} · ${venta.cantidadProductos} producto(s) · Q${Number(venta.total).toFixed(2)}</small>`;
-        listaVentasAbiertas.appendChild(boton);
+        const fecha = venta.fechaCierre
+            ? new Date(venta.fechaCierre)
+            : null;
+
+        const clave = fecha
+            ? `${fecha.getFullYear()}-${String(fecha.getMonth() + 1).padStart(2, "0")}`
+            : "sin-fecha";
+
+        if (!grupos[clave]) grupos[clave] = [];
+        grupos[clave].push(venta);
+    });
+
+    Object.keys(grupos).sort().reverse().forEach(clave => {
+        const ventasMes = grupos[clave];
+
+        const grupo = document.createElement("section");
+        grupo.className = "grupo-historial";
+
+        let tituloMes = "Sin fecha";
+
+        if (clave !== "sin-fecha") {
+            const [anio, mes] = clave.split("-").map(Number);
+
+            tituloMes = new Date(anio, mes - 1, 1)
+                .toLocaleDateString("es-GT", {
+                    month: "long",
+                    year: "numeric"
+                });
+
+            tituloMes =
+                tituloMes.charAt(0).toUpperCase() +
+                tituloMes.slice(1);
+        }
+
+        const totalMes = ventasMes.reduce(
+            (suma, venta) => suma + Number(venta.total || 0),
+            0
+        );
+
+        const encabezado = document.createElement("div");
+        encabezado.className = "encabezado-mes-historial";
+
+        encabezado.innerHTML = `
+            <div class="mes-historial-info">
+                <strong> ${tituloMes}</strong>
+                <span>${ventasMes.length} venta(s)</span>
+            </div>
+
+            <strong>Q${totalMes.toFixed(2)}</strong>
+        `;
+
+        const listaMes = document.createElement("div");
+        listaMes.className = "lista-historial-mes";
+
+        ventasMes.forEach(venta => {
+            const boton = document.createElement("button");
+
+            boton.type = "button";
+            boton.className = "tarjeta-venta tarjeta-historial";
+            boton.dataset.id = venta.idVenta;
+
+            const estado = venta.estado || "Completada";
+
+            if (estado === "Anulada") {
+                boton.classList.add("venta-anulada");
+            }
+
+            const fecha = venta.fechaCierre
+                ? new Date(venta.fechaCierre).toLocaleString("es-GT")
+                : "Sin fecha";
+
+            boton.innerHTML = `
+                <div class="historial-venta-info">
+                    <strong>#${venta.idVenta} · ${venta.vehiculo}</strong>
+
+                    <span>
+                        ${venta.placa || "Sin placa"}
+                    </span>
+
+                    <span class="estado-venta">
+                        ${estado}
+                    </span>
+
+                    <small>
+                        ${fecha} · ${venta.cantidadProductos} producto(s)
+                    </small>
+                </div>
+
+                <strong class="historial-venta-total">
+                    Q${Number(venta.total || 0).toFixed(2)}
+                </strong>
+            `;
+
+            listaMes.appendChild(boton);
+        });
+
+        grupo.appendChild(encabezado);
+        grupo.appendChild(listaMes);
+        listaVentasAbiertas.appendChild(grupo);
     });
 }
 
 async function abrirVenta(id) {
     ventaActual = await respuestaVenta(`/ventas/${id}`);
+
     formNuevaVenta.style.display = "none";
     contenidoVenta.style.display = "block";
-    document.getElementById("tituloVenta").textContent = `${ventaActual.vehiculo}${ventaActual.placa ? ` · ${ventaActual.placa}` : ""}`;
+
+    document.getElementById("tituloVenta").textContent =
+        `${ventaActual.vehiculo}${ventaActual.placa ? ` · ${ventaActual.placa}` : ""}`;
+
     const esVentaAbierta = ventaActual.estado === "Abierta";
-    const esVentaCompletadaEnHistorial = mostrandoHistorial && ventaActual.estado === "Completada";
+    const esVentaCompletadaEnHistorial =
+        mostrandoHistorial && ventaActual.estado === "Completada";
+
     const accionesVenta = document.querySelector(".acciones-venta");
     const btnAnularVenta = document.getElementById("btnAnularVenta");
     const btnCancelarVenta = document.getElementById("btnCancelarVenta");
     const btnConcretarVenta = document.getElementById("btnConcretarVenta");
 
-    document.querySelector(".agregar-producto-venta").style.display = esVentaAbierta ? "grid" : "none";
-    accionesVenta.style.display = (esVentaAbierta || esVentaCompletadaEnHistorial) ? "flex" : "none";
-    btnCancelarVenta.style.display = esVentaAbierta ? "inline-flex" : "none";
-    btnConcretarVenta.style.display = esVentaAbierta ? "inline-flex" : "none";
-    btnAnularVenta.style.display = esVentaCompletadaEnHistorial ? "inline-flex" : "none";
+    document.querySelector(".agregar-producto-venta").style.display =
+        esVentaAbierta ? "grid" : "none";
 
-    document.getElementById("tituloModalVentas").textContent = mostrandoHistorial ? "Historial de ventas" : "Ventas abiertas";
+    accionesVenta.style.display =
+        (esVentaAbierta || esVentaCompletadaEnHistorial)
+            ? "flex"
+            : "none";
+
+    btnCancelarVenta.style.display =
+        esVentaAbierta ? "inline-flex" : "none";
+
+    btnConcretarVenta.style.display =
+        esVentaAbierta ? "inline-flex" : "none";
+
+    btnAnularVenta.style.display =
+        esVentaCompletadaEnHistorial ? "inline-flex" : "none";
+
+    document.getElementById("tituloModalVentas").textContent =
+        mostrandoHistorial ? "Historial de ventas" : "Ventas abiertas";
+
     mostrarDetallesVenta();
-    if (mostrandoHistorial) cargarHistorialVentas();
-    else cargarVentasAbiertas();
+
+    if (mostrandoHistorial) {
+        modalVentas.classList.add("modo-historial");
+    } else {
+        modalVentas.classList.remove("modo-historial");
+        await cargarVentasAbiertas();
+    }
 }
 
 function mostrarDetallesVenta() {
@@ -92,21 +233,56 @@ function mostrarDetallesVenta() {
 
 document.getElementById("btnVentas").addEventListener("click", async () => {
     mostrandoHistorial = false;
-    document.getElementById("tituloModalVentas").textContent = "Ventas abiertas";
-    document.getElementById("btnNuevaVenta").style.display = "inline-flex";
-    modalVentas.classList.add("activo");
-    try { await cargarVentasAbiertas(); } catch (error) { alert(error.message); }
-});
-document.getElementById("btnHistorialVentas").addEventListener("click", async () => {
-    mostrandoHistorial = true;
-    document.getElementById("tituloModalVentas").textContent = "Historial de ventas";
     ventaActual = null;
+
+    modalVentas.classList.remove("modo-historial");
+
+    if (filtrosHistorialVentas) {
+        filtrosHistorialVentas.style.display = "none";
+    }
+
     contenidoVenta.style.display = "none";
     formNuevaVenta.style.display = "none";
-    document.getElementById("btnNuevaVenta").style.display = "none";
+
+    document.getElementById("tituloModalVentas").textContent = "Ventas abiertas";
+    document.getElementById("btnNuevaVenta").style.display = "inline-flex";
+
     modalVentas.classList.add("activo");
-    try { await cargarHistorialVentas(); } catch (error) { alert(error.message); }
+
+    try {
+        await cargarVentasAbiertas();
+    } catch (error) {
+        alert(error.message);
+    }
 });
+
+document.getElementById("btnHistorialVentas").addEventListener("click", async () => {
+    mostrandoHistorial = true;
+    ventaActual = null;
+
+    modalVentas.classList.add("modo-historial");
+
+    contenidoVenta.style.display = "none";
+    formNuevaVenta.style.display = "none";
+
+    document.getElementById("tituloModalVentas").textContent = "Historial de ventas";
+    document.getElementById("btnNuevaVenta").style.display = "none";
+
+    if (filtrosHistorialVentas) {
+        filtrosHistorialVentas.style.display = "grid";
+    }
+
+    establecerFechasHistorial();
+
+    modalVentas.classList.add("activo");
+
+    try {
+        await cargarHistorialVentas();
+    } catch (error) {
+        alert(error.message);
+    }
+});
+
 document.getElementById("btnCerrarVentas").addEventListener("click", () => modalVentas.classList.remove("activo"));
 document.getElementById("btnNuevaVenta").addEventListener("click", () => {
     mostrandoHistorial = false;
@@ -191,6 +367,44 @@ document.getElementById("btnAnularVenta").addEventListener("click", async () => 
     }
 });
 
+const filtrosHistorialVentas = document.getElementById("filtrosHistorialVentas");
+const historialDesde = document.getElementById("historialDesde");
+const historialHasta = document.getElementById("historialHasta");
+const historialBusqueda = document.getElementById("historialBusqueda");
+
+function establecerFechasHistorial() {
+    const ahora = new Date();
+    const yyyy = ahora.getFullYear();
+    const mm = String(ahora.getMonth() + 1).padStart(2, "0");
+    if (!historialDesde.value) historialDesde.value = `${yyyy}-${mm}-01`;
+    if (!historialHasta.value) historialHasta.value = `${yyyy}-${mm}-${String(ahora.getDate()).padStart(2, "0")}`;
+}
+
+document.getElementById("btnFiltrarHistorial")?.addEventListener("click", async () => {
+    if (historialDesde.value && historialHasta.value && historialHasta.value < historialDesde.value) {
+        alert("La fecha final no puede ser anterior a la inicial.");
+        return;
+    }
+    try { await cargarHistorialVentas(); } catch (error) { alert(error.message); }
+});
+
+document.getElementById("btnLimpiarHistorial")?.addEventListener("click", async () => {
+    historialBusqueda.value = "";
+    const ahora = new Date();
+    const yyyy = ahora.getFullYear();
+    const mm = String(ahora.getMonth() + 1).padStart(2, "0");
+    historialDesde.value = `${yyyy}-${mm}-01`;
+    historialHasta.value = `${yyyy}-${mm}-${String(ahora.getDate()).padStart(2, "0")}`;
+    try { await cargarHistorialVentas(); } catch (error) { alert(error.message); }
+});
+
+historialBusqueda?.addEventListener("keydown", evento => {
+    if (evento.key === "Enter") {
+        evento.preventDefault();
+        document.getElementById("btnFiltrarHistorial")?.click();
+    }
+});
+
 const modalReportesVentas = document.getElementById("modalReportesVentas");
 const resultadoReporteVentas = document.getElementById("resultadoReporteVentas");
 const formReporteVentas = document.getElementById("formReporteVentas");
@@ -220,13 +434,13 @@ document.getElementById("btnReportesVentas").addEventListener("click", () => {
 
 document.getElementById("btnCerrarReportesVentas").addEventListener("click", () => modalReportesVentas.classList.remove("activo"));
 
-document.getElementById("btnBuscarVentas").addEventListener("click", async () => {
+document.getElementById("btnEjecutarBusquedaVentas")?.addEventListener("click", async () => {
     resultadosBusquedaVentas.innerHTML = "";
     modalBusquedaVentas.classList.add("activo");
     try { await buscarVentasRegistradas(); } catch (error) { alert(error.message); }
 });
 
-document.getElementById("btnCerrarBusquedaVentas").addEventListener("click", () => modalBusquedaVentas.classList.remove("activo"));
+document.getElementById("btnCerrarBusquedaVentas")?.addEventListener("click", () => modalBusquedaVentas.classList.remove("activo"));
 
 formReporteVentas.addEventListener("submit", async evento => {
     evento.preventDefault();

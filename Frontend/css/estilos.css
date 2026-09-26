@@ -2,21 +2,21 @@
    VARIABLES Y CONFIGURACIÓN GLOBAL
    ========================================================== */
 :root {
-    --primary: #2563eb;
-    --primary-hover: #1d4ed8;
-    --secondary: #64748b;
-    --secondary-hover: #475569;
+    --primary: #dc2626;
+    --primary-hover: #b91c1c;
+    --secondary: #4b5563;
+    --secondary-hover: #374151;
     --danger: #ef4444;
     --danger-hover: #dc2626;
     --danger-bg: #fef2f2;
-    --success: #10b981;
-    --success-hover: #059669;
-    --success-bg: #ecfdf5;
+    --success: #4b5563;
+    --success-hover: #111111;
+    --success-bg: #f3f4f6;
     
-    --bg-main: #f8fafc;
+    --bg-main: #f3f4f6;
     --bg-surface: #ffffff;
-    --text-main: #0f172a;
-    --text-muted: #64748b;
+    --text-main: #111111;
+    --text-muted: #6b7280;
     --border-color: #e2e8f0;
     
     --radius-sm: 6px;
@@ -152,11 +152,11 @@ button:active {
 .btn-reactivar-categoria {
     background-color: var(--success-bg);
     color: var(--success);
-    border: 1px solid #a7f3d0;
+    border: 1px solid #d1d5db;
 }
 
 .btn-reactivar-categoria:hover {
-    background-color: #d1fae5;
+    background-color: #e5e7eb;
     color: var(--success-hover);
 }
 
@@ -183,25 +183,27 @@ main {
 .buscador input,
 .barra-herramientas select {
     width: 100%;
-    padding: 0.75rem 1rem;
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-md);
-    background-color: var(--bg-surface);
+    height: 50px;
+    padding: 0.2rem 1rem;
+    border: 1px solid #d1d5db;
+    border-radius: 10px;
+    background-color: #ffffff;
     font-size: 0.95rem;
-    color: var(--text-main);
+    color: #111111;
     outline: none;
-    transition: var(--transition);
+    transition: all 0.2s ease;
 }
 
 .barra-herramientas select {
-    width: auto;
+    width: 220;
     min-width: 220px;
+    cursor: pointer;
 }
 
 .buscador input:focus,
 .barra-herramientas select:focus {
     border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.12);
 }
 
 /* ==========================================================
@@ -377,7 +379,7 @@ main {
 .campo textarea:focus {
     outline: none;
     border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15);
 }
 
 .campo small {
@@ -750,7 +752,7 @@ main {
 .resumen-reporte div { background: var(--bg-main); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: .7rem; }
 .resumen-reporte span { display: block; color: var(--text-muted); font-size: .78rem; margin-bottom: .2rem; }
 .resumen-reporte strong { font-size: 1rem; }
-.resumen-ganancia { border-color: #a7f3d0 !important; background: var(--success-bg) !important; }
+.resumen-ganancia { border-color: #d1d5db !important; background: var(--success-bg) !important; }
 .reporte-vacio { padding: 1.5rem; text-align: center; background: var(--bg-main); border: 1px dashed var(--border-color); border-radius: var(--radius-md); }
 .reporte-vacio strong, .reporte-vacio span { display: block; }
 .reporte-vacio span { margin-top: .3rem; color: var(--text-muted); }
@@ -819,6 +821,11 @@ main {
     border-top: 2px solid var(--border-color);
     font-size: 1.05rem;
 }
+
+
+
+
+
 @media (max-width: 600px) {
     .encabezado-detalle-busqueda, .fila-detalle-busqueda { grid-template-columns: 1fr; }
     .encabezado-detalle-busqueda { align-items: flex-start; }
@@ -827,3 +834,1144 @@ main {
 @media (max-width: 800px) { .resumen-reporte { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 700px) { .ventas-layout { grid-template-columns: 1fr; } .panel-ventas { border: 0; border-bottom: 1px solid var(--border-color); padding: 0 0 1rem; } .encabezado-lista-reporte { align-items: flex-start; flex-direction: column; } .fila-reporte-venta { align-items: flex-start; } }
 @media (max-width: 500px) { .resumen-reporte { grid-template-columns: 1fr; } .fila-reporte-venta { flex-direction: column; } .total-reporte-venta { align-self: flex-end; } }
+
+
+/* ==========================================================
+   HISTORIAL DE VENTAS — DISEÑO FINAL
+   Coincide exactamente con la estructura de index.html
+   y las clases generadas por ventas.js.
+   ========================================================== */
+
+#modalVentas.modal-ventas {
+    max-width: 1180px;
+}
+
+/* ----------------------------------------------------------
+   MODO HISTORIAL
+   ---------------------------------------------------------- */
+
+#modalVentas.modo-historial .modal-contenido {
+    max-width: 1180px;
+}
+
+#modalVentas.modo-historial .ventas-layout {
+    display: block;
+    min-height: 0;
+}
+
+#modalVentas.modo-historial .panel-ventas {
+    width: 100%;
+    padding: 0;
+    border: 0;
+}
+
+#modalVentas.modo-historial #btnNuevaVenta {
+    display: none !important;
+}
+
+/* ----------------------------------------------------------
+   FILTROS
+   ---------------------------------------------------------- */
+
+#modalVentas.modo-historial .filtros-historial-ventas {
+    display: grid !important;
+
+    grid-template-columns: 150px 150px minmax(220px, 1fr) auto auto;
+
+    gap: 12px;
+    align-items: end;
+
+    width: 100%;
+    margin: 0 0 22px;
+
+    padding: 16px;
+
+    background: #f3f4f6;
+
+    border: 1px solid #d1d5db;
+    border-left: 5px solid #dc2626;
+
+    border-radius: 10px;
+}
+
+#modalVentas.modo-historial .campo-filtro-historial {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    min-width: 0;
+}
+
+#modalVentas.modo-historial .campo-filtro-historial label {
+    font-size: 12px;
+    font-weight: 800;
+    color: #111111;
+}
+
+#modalVentas.modo-historial .campo-filtro-historial input {
+    width: 100%;
+    height: 40px;
+
+    padding: 0 10px;
+
+    border: 1px solid #c7cbd1;
+    border-radius: 7px;
+
+    background: #ffffff;
+    color: #111111;
+
+    font: inherit;
+}
+
+#modalVentas.modo-historial .campo-filtro-historial input:focus {
+    outline: none;
+    border-color: #dc2626;
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, .12);
+}
+
+#modalVentas.modo-historial .filtros-historial-ventas button {
+    height: 40px;
+    min-width: 92px;
+}
+
+/* ----------------------------------------------------------
+   HISTORIAL / MESES
+   ---------------------------------------------------------- */
+
+#modalVentas.modo-historial #listaVentasAbiertas {
+    width: 100%;
+    margin-top: 0;
+}
+
+#modalVentas.modo-historial .grupo-historial {
+    width: 100%;
+    margin-bottom: 24px;
+}
+
+#modalVentas.modo-historial .encabezado-mes-historial {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    width: 100%;
+
+    padding: 14px 17px;
+    margin-bottom: 12px;
+
+    background: #111111;
+    color: #ffffff;
+
+    border-left: 5px solid #dc2626;
+    border-radius: 9px;
+}
+
+#modalVentas.modo-historial .mes-historial-info {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+}
+
+#modalVentas.modo-historial .mes-historial-info strong {
+    color: #ffffff;
+    font-size: 17px;
+}
+
+#modalVentas.modo-historial .mes-historial-info span {
+    color: #d1d5db;
+    font-size: 12px;
+}
+
+#modalVentas.modo-historial .encabezado-mes-historial > strong {
+    color: #ffffff;
+    font-size: 16px;
+}
+
+/* ----------------------------------------------------------
+   TARJETAS DE VENTA
+   ---------------------------------------------------------- */
+
+#modalVentas.modo-historial .lista-historial-mes {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+#modalVentas.modo-historial .tarjeta-historial {
+    position: relative;
+
+    width: 100%;
+    min-height: 132px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 18px;
+
+    padding: 17px 18px 17px 21px;
+
+    background: #ffffff;
+    color: #111111;
+
+    border: 1px solid #d1d5db;
+    border-radius: 9px;
+
+    text-align: left;
+
+    box-shadow: 0 1px 2px rgba(0, 0, 0, .04);
+
+    transition:
+        transform .15s ease,
+        box-shadow .15s ease,
+        border-color .15s ease;
+}
+
+#modalVentas.modo-historial .tarjeta-historial::before {
+    content: "";
+
+    position: absolute;
+
+    left: 0;
+    top: 0;
+    bottom: 0;
+
+    width: 4px;
+
+    background: #dc2626;
+
+    border-radius: 9px 0 0 9px;
+}
+
+#modalVentas.modo-historial .tarjeta-historial:hover {
+    transform: translateY(-2px);
+
+    border-color: #dc2626;
+
+    box-shadow: 0 5px 14px rgba(0, 0, 0, .09);
+}
+
+#modalVentas.modo-historial .historial-venta-info {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+
+    min-width: 0;
+}
+
+#modalVentas.modo-historial .historial-venta-info > strong {
+    color: #111111;
+    font-size: 15px;
+    font-weight: 800;
+}
+
+#modalVentas.modo-historial .historial-venta-info > span:not(.estado-venta) {
+    color: #4b5563;
+    font-size: 13px;
+}
+
+#modalVentas.modo-historial .historial-venta-info small {
+    color: #6b7280;
+    font-size: 11px;
+}
+
+#modalVentas.modo-historial .estado-venta {
+    width: fit-content;
+
+    padding: 3px 8px;
+
+    border-radius: 5px;
+
+    background: #f3f4f6;
+    color: #111111;
+
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+#modalVentas.modo-historial .historial-venta-total {
+    flex-shrink: 0;
+
+    padding: 8px 11px;
+
+    background: #f3f4f6;
+    color: #111111;
+
+    border-radius: 6px;
+
+    font-size: 15px;
+    font-weight: 800;
+}
+
+#modalVentas.modo-historial .tarjeta-historial.venta-anulada {
+    background: #fafafa;
+}
+
+#modalVentas.modo-historial .tarjeta-historial.venta-anulada::before {
+    background: #dc2626;
+}
+
+#modalVentas.modo-historial .venta-anulada .estado-venta {
+    background: #fef2f2;
+    color: #dc2626;
+}
+
+#modalVentas.modo-historial .venta-anulada .historial-venta-total {
+    color: #dc2626;
+    background: #fef2f2;
+}
+
+/* ----------------------------------------------------------
+   DETALLE DE VENTA
+   Aparece debajo del historial al seleccionar una venta.
+   ---------------------------------------------------------- */
+
+#modalVentas.modo-historial .detalle-venta {
+    width: 100%;
+
+    margin-top: 18px;
+    padding: 20px;
+
+    background: #ffffff;
+
+    border: 1px solid #d1d5db;
+    border-top: 4px solid #dc2626;
+
+    border-radius: 10px;
+
+    box-sizing: border-box;
+}
+
+#modalVentas.modo-historial #contenidoVenta {
+    width: 100%;
+}
+
+#modalVentas.modo-historial #contenidoVenta > h3 {
+    margin-bottom: 15px;
+
+    color: #111111;
+    font-size: 20px;
+}
+
+/* ----------------------------------------------------------
+   SIN RESULTADOS
+   ---------------------------------------------------------- */
+
+#modalVentas.modo-historial .historial-vacio {
+    width: 100%;
+
+    padding: 45px 20px;
+
+    background: #f3f4f6;
+
+    border: 1px dashed #9ca3af;
+    border-radius: 10px;
+
+    text-align: center;
+}
+
+#modalVentas.modo-historial .historial-vacio strong {
+    display: block;
+
+    margin-bottom: 5px;
+
+    color: #111111;
+    font-size: 17px;
+}
+
+#modalVentas.modo-historial .historial-vacio span {
+    color: #6b7280;
+    font-size: 13px;
+}
+
+/* ----------------------------------------------------------
+   RESPONSIVE
+   ---------------------------------------------------------- */
+
+@media (max-width: 900px) {
+    #modalVentas.modo-historial .filtros-historial-ventas {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    #modalVentas.modo-historial .filtro-historial-busqueda {
+        grid-column: 1 / -1;
+    }
+
+    #modalVentas.modo-historial .lista-historial-mes {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 600px) {
+    #modalVentas.modo-historial .filtros-historial-ventas {
+        grid-template-columns: 1fr;
+    }
+
+    #modalVentas.modo-historial .filtro-historial-busqueda {
+        grid-column: auto;
+    }
+
+    #modalVentas.modo-historial .encabezado-mes-historial {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 7px;
+    }
+
+    #modalVentas.modo-historial .mes-historial-info {
+        flex-wrap: wrap;
+    }
+
+    #modalVentas.modo-historial .tarjeta-historial {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    #modalVentas.modo-historial .historial-venta-total {
+        align-self: flex-end;
+    }
+}
+/* ==========================================================
+   TEMA VISUAL UNIFICADO — SISTEMA DE INVENTARIO
+   ----------------------------------------------------------
+   Este bloque modifica únicamente apariencia.
+   No cambia IDs, estructura funcional ni lógica JavaScript.
+   ========================================================== */
+
+/* ----------------------------------------------------------
+   PALETA GENERAL
+   ---------------------------------------------------------- */
+:root {
+    --primary: #dc2626;
+    --primary-hover: #b91c1c;
+    --secondary: #4b5563;
+    --secondary-hover: #111111;
+
+    --danger: #dc2626;
+    --danger-hover: #b91c1c;
+    --danger-bg: #fef2f2;
+
+    --success: #111111;
+    --success-hover: #000000;
+    --success-bg: #f3f4f6;
+
+    --bg-main: #f3f4f6;
+    --bg-surface: #ffffff;
+    --bg-soft: #f8fafc;
+
+    --text-main: #111111;
+    --text-muted: #6b7280;
+    --border-color: #d1d5db;
+
+    --radius-sm: 7px;
+    --radius-md: 10px;
+    --radius-lg: 12px;
+
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, .05);
+    --shadow-md: 0 5px 14px rgba(0, 0, 0, .08);
+    --shadow-lg: 0 12px 30px rgba(0, 0, 0, .12);
+
+    --transition: all .18s ease;
+}
+
+/* ----------------------------------------------------------
+   BASE
+   ---------------------------------------------------------- */
+body {
+    background: #f3f4f6;
+    color: #111111;
+}
+
+button,
+input,
+select,
+textarea {
+    font-family: inherit;
+}
+
+button {
+    border-radius: 7px;
+}
+
+/* ----------------------------------------------------------
+   ENCABEZADO PRINCIPAL
+   ---------------------------------------------------------- */
+.encabezado {
+    background: #ffffff;
+    border-bottom: 1px solid #d1d5db;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, .05);
+}
+
+.encabezado h1 {
+    color: #111111;
+    font-weight: 800;
+}
+
+.acciones-encabezado {
+    gap: 8px;
+}
+
+/* ----------------------------------------------------------
+   BOTONES — MISMA IDENTIDAD EN TODO EL SISTEMA
+   ---------------------------------------------------------- */
+.btn-principal {
+    background: #dc2626;
+    color: #ffffff;
+    border: 1px solid #dc2626;
+    font-weight: 700;
+}
+
+.btn-principal:hover {
+    background: #b91c1c;
+    border-color: #b91c1c;
+    box-shadow: 0 3px 8px rgba(220, 38, 38, .18);
+}
+
+.btn-secundario {
+    background: #ffffff;
+    color: #111111;
+    border: 1px solid #d1d5db;
+    font-weight: 600;
+}
+
+.btn-secundario:hover {
+    background: #f3f4f6;
+    border-color: #9ca3af;
+}
+
+.btn-editar,
+.btn-editar-categoria {
+    background: #f3f4f6;
+    color: #111111;
+    border: 1px solid #d1d5db;
+    font-weight: 600;
+}
+
+.btn-editar:hover,
+.btn-editar-categoria:hover {
+    background: #e5e7eb;
+    border-color: #9ca3af;
+}
+
+.btn-desactivar,
+.btn-desactivar-categoria {
+    background: #fef2f2;
+    color: #dc2626;
+    border: 1px solid #fecaca;
+    font-weight: 700;
+}
+
+.btn-desactivar:hover,
+.btn-desactivar-categoria:hover {
+    background: #fee2e2;
+    border-color: #fca5a5;
+}
+
+.btn-reactivar-categoria {
+    background: #f3f4f6;
+    color: #111111;
+    border: 1px solid #d1d5db;
+    font-weight: 700;
+}
+
+.btn-reactivar-categoria:hover {
+    background: #e5e7eb;
+    color: #000000;
+}
+
+/* ----------------------------------------------------------
+   BÚSQUEDA Y FILTROS PRINCIPALES
+   ---------------------------------------------------------- */
+.barra-herramientas {
+    padding: 15px;
+    background: #f3f4f6;
+    border: 1px solid #d1d5db;
+    border-left: 5px solid #dc2626;
+    border-radius: 10px;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.buscador {
+    min-width: 260px;
+}
+
+.buscador input,
+.barra-herramientas select {
+    height: 42px;
+    background: #ffffff;
+    border: 1px solid #c7cbd1;
+    border-radius: 7px;
+    color: #111111;
+}
+
+.buscador input:focus,
+.barra-herramientas select:focus {
+    border-color: #dc2626;
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, .12);
+}
+
+/* ----------------------------------------------------------
+   TÍTULOS DE SECCIÓN
+   ---------------------------------------------------------- */
+.productos h2 {
+    font-size: 1.2rem;
+    font-weight: 800;
+    margin-bottom: 14px;
+    color: #111111;
+}
+
+/* ----------------------------------------------------------
+   TARJETAS DE PRODUCTOS
+   ---------------------------------------------------------- */
+.lista-productos {
+    gap: 12px;
+}
+
+.tarjeta-producto {
+    position: relative;
+    background: #ffffff;
+    border: 1px solid #d1d5db;
+    border-left: 4px solid #dc2626;
+    border-radius: 9px;
+    padding: 16px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, .04);
+    transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+}
+
+.tarjeta-producto:hover {
+    transform: translateY(-2px);
+    border-color: #dc2626;
+    box-shadow: 0 5px 14px rgba(0, 0, 0, .08);
+}
+
+.imagen-producto {
+    background: #f3f4f6;
+    border: 1px solid #e5e7eb;
+}
+
+.tarjeta-producto h3 {
+    color: #111111;
+    font-weight: 800;
+}
+
+.tarjeta-producto p {
+    color: #4b5563;
+}
+
+.precio {
+    color: #dc2626;
+    font-weight: 800;
+}
+
+.stock {
+    color: #4b5563;
+}
+
+.acciones-producto {
+    border-top: 1px solid #e5e7eb;
+}
+
+/* ----------------------------------------------------------
+   MODALES — MISMA ESTRUCTURA VISUAL
+   ---------------------------------------------------------- */
+.modal {
+    background: rgba(17, 17, 17, .48);
+    backdrop-filter: blur(4px);
+}
+
+.modal-contenido {
+    background: #ffffff;
+    border: 1px solid #d1d5db;
+    border-top: 4px solid #dc2626;
+    border-radius: 12px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, .12);
+    padding: 24px;
+}
+
+.modal-encabezado {
+    margin-bottom: 18px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.modal-encabezado h2 {
+    color: #111111;
+    font-size: 1.35rem;
+    font-weight: 800;
+}
+
+.btn-cerrar {
+    color: #6b7280;
+    border-radius: 7px;
+}
+
+.btn-cerrar:hover {
+    background: #f3f4f6;
+    color: #111111;
+}
+
+/* ----------------------------------------------------------
+   CAMPOS DE FORMULARIO
+   ---------------------------------------------------------- */
+.campo {
+    margin-bottom: 16px;
+}
+
+.campo label {
+    color: #111111;
+    font-weight: 700;
+}
+
+.campo input,
+.campo select,
+.campo textarea,
+.form-venta input,
+.form-venta textarea,
+.agregar-producto-venta input,
+.form-reporte-ventas input,
+.busqueda-ventas input {
+    background: #ffffff;
+    border: 1px solid #c7cbd1;
+    border-radius: 7px;
+    color: #111111;
+}
+
+.campo input:focus,
+.campo select:focus,
+.campo textarea:focus,
+.form-venta input:focus,
+.form-venta textarea:focus,
+.agregar-producto-venta input:focus,
+.form-reporte-ventas input:focus,
+.busqueda-ventas input:focus {
+    outline: none;
+    border-color: #dc2626;
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, .12);
+}
+
+.campo small {
+    color: #6b7280;
+}
+
+.modal-acciones {
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid #e5e7eb;
+}
+
+/* ----------------------------------------------------------
+   CATEGORÍAS
+   ---------------------------------------------------------- */
+#modalCategorias .modal-contenido {
+    max-width: 760px;
+}
+
+.lista-categorias {
+    gap: 12px;
+    margin-top: 14px;
+}
+
+.tarjeta-categoria {
+    position: relative;
+    padding: 15px 16px 15px 20px;
+    background: #ffffff;
+    border: 1px solid #d1d5db;
+    border-left: 4px solid #dc2626;
+    border-radius: 9px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, .04);
+    transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+}
+
+.tarjeta-categoria:hover {
+    transform: translateY(-2px);
+    border-color: #dc2626;
+    box-shadow: 0 5px 14px rgba(0, 0, 0, .08);
+}
+
+.tarjeta-categoria h3 {
+    color: #111111;
+    font-weight: 800;
+}
+
+.tarjeta-categoria p {
+    color: #6b7280;
+}
+
+/* ----------------------------------------------------------
+   EQUIVALENCIAS
+   ---------------------------------------------------------- */
+.equivalencias-seccion {
+    padding: 16px;
+    background: #f3f4f6;
+    border: 1px solid #d1d5db;
+    border-left: 4px solid #dc2626;
+    border-radius: 9px;
+}
+
+.equivalencias-seccion > label {
+    color: #111111;
+    font-weight: 800;
+}
+
+.form-nueva-equivalencia {
+    background: #ffffff;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    padding: 14px;
+}
+
+.lista-equivalencias {
+    background: #ffffff;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+}
+
+.fila-equivalencia {
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.fila-equivalencia:hover {
+    background: #f3f4f6;
+}
+
+.datos-equivalencia .marca {
+    color: #111111;
+}
+
+.datos-equivalencia .codigo {
+    color: #6b7280;
+}
+
+.btn-agregar-equivalencia {
+    border-color: #d1d5db;
+    background: #ffffff;
+}
+
+/* ----------------------------------------------------------
+   VENTAS ABIERTAS
+   ---------------------------------------------------------- */
+.modal-ventas {
+    max-width: 1180px;
+}
+
+#modalVentas:not(.modo-historial) .panel-ventas {
+    background: #f3f4f6;
+    border: 1px solid #d1d5db;
+    border-left: 4px solid #dc2626;
+    border-radius: 9px;
+    padding: 16px;
+}
+
+#modalVentas:not(.modo-historial) .lista-ventas {
+    gap: 10px;
+}
+
+#modalVentas:not(.modo-historial) .tarjeta-venta {
+    width: 100%;
+    padding: 13px;
+    background: #ffffff;
+    border: 1px solid #d1d5db;
+    border-left: 4px solid #dc2626;
+    border-radius: 8px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, .04);
+}
+
+#modalVentas:not(.modo-historial) .tarjeta-venta:hover {
+    border-color: #dc2626;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, .07);
+}
+
+.form-venta {
+    display: flex;
+    flex-direction: column;
+}
+
+#modalVentas:not(.modo-historial) .detalle-venta {
+    background: #ffffff;
+    border: 1px solid #d1d5db;
+    border-top: 4px solid #dc2626;
+    border-radius: 9px;
+    padding: 18px;
+}
+
+.agregar-producto-venta {
+    padding: 14px;
+    background: #f3f4f6;
+    border: 1px solid #d1d5db;
+    border-left: 4px solid #dc2626;
+    border-radius: 8px;
+}
+
+.resultados-venta button {
+    background: #ffffff;
+    border: 1px solid #d1d5db;
+    border-left: 3px solid #dc2626;
+    border-radius: 7px;
+}
+
+.resultados-venta button:hover {
+    background: #f3f4f6;
+    border-color: #dc2626;
+}
+
+.fila-detalle-venta {
+    background: #ffffff;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.total-venta {
+    padding: 12px 14px;
+    background: #f3f4f6;
+    border-radius: 7px;
+    color: #111111;
+    font-weight: 700;
+}
+
+.total-venta strong {
+    color: #dc2626;
+    font-size: 1.2rem;
+}
+
+.acciones-venta {
+    padding-top: 14px;
+    border-top: 1px solid #e5e7eb;
+}
+
+/* ----------------------------------------------------------
+   REPORTE DE VENTAS
+   ---------------------------------------------------------- */
+.modal-reporte-ventas {
+    max-width: 900px;
+}
+
+.form-reporte-ventas {
+    padding: 15px;
+    background: #f3f4f6;
+    border: 1px solid #d1d5db;
+    border-left: 4px solid #dc2626;
+    border-radius: 9px;
+}
+
+.form-reporte-ventas label {
+    color: #111111;
+    font-weight: 700;
+}
+
+.resultado-reporte {
+    margin-top: 18px;
+}
+
+.encabezado-lista-reporte {
+    padding: 13px 15px;
+    background: #111111;
+    color: #ffffff;
+    border-left: 4px solid #dc2626;
+    border-bottom: none;
+    border-radius: 8px;
+}
+
+.encabezado-lista-reporte h3 {
+    color: #ffffff;
+    font-weight: 800;
+}
+
+.encabezado-lista-reporte span {
+    color: #d1d5db;
+}
+
+.lista-reporte-ventas {
+    gap: 10px;
+    max-height: 420px;
+    padding: 12px 2px 2px;
+}
+
+.fila-reporte-venta {
+    background: #ffffff;
+    border: 1px solid #d1d5db;
+    border-left: 4px solid #dc2626;
+    border-radius: 8px;
+    padding: 13px 15px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, .04);
+}
+
+.fila-reporte-venta:hover {
+    border-color: #dc2626;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, .07);
+}
+
+.info-reporte-venta strong {
+    color: #111111;
+    font-weight: 800;
+}
+
+.total-reporte-venta {
+    color: #dc2626;
+    font-weight: 800;
+}
+
+.resumen-reporte {
+    gap: 10px;
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 2px solid #d1d5db;
+}
+
+.resumen-reporte div {
+    background: #f3f4f6;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    padding: 12px;
+}
+
+.resumen-reporte strong {
+    color: #111111;
+}
+
+.resumen-ganancia {
+    border-color: #dc2626 !important;
+    background: #fef2f2 !important;
+}
+
+.resumen-ganancia strong {
+    color: #dc2626;
+}
+
+/* ----------------------------------------------------------
+   BÚSQUEDA DE VENTAS ANTIGUA
+   Se mantiene por compatibilidad, sin cambiar su lógica.
+   ---------------------------------------------------------- */
+.busqueda-ventas {
+    padding: 15px;
+    background: #f3f4f6;
+    border: 1px solid #d1d5db;
+    border-left: 4px solid #dc2626;
+    border-radius: 9px;
+}
+
+.resultado-venta-busqueda {
+    background: #ffffff;
+    border: 1px solid #d1d5db;
+    border-left: 4px solid #dc2626;
+    border-radius: 8px;
+}
+
+.resultado-venta-busqueda:hover {
+    border-color: #dc2626;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, .07);
+}
+
+.detalle-venta-buscada {
+    border: 1px solid #d1d5db;
+    border-top: 4px solid #dc2626;
+    border-radius: 9px;
+}
+
+.detalle-busqueda-encabezado {
+    background: #111111;
+    color: #ffffff;
+    border-bottom: none;
+}
+
+.detalle-busqueda-encabezado span,
+.detalle-busqueda-encabezado small {
+    color: #d1d5db;
+}
+
+.fila-detalle-busqueda {
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.total-detalle-busqueda {
+    border-top: 2px solid #d1d5db;
+    background: #f3f4f6;
+}
+
+.indicador-detalle-venta {
+    color: #dc2626;
+    font-weight: 700;
+}
+
+/* ----------------------------------------------------------
+   IMAGEN ACTUAL Y ARCHIVOS
+   ---------------------------------------------------------- */
+#imagenActual {
+    background: #f3f4f6;
+    border: 1px dashed #9ca3af;
+    border-radius: 8px;
+}
+
+/* ----------------------------------------------------------
+   RESPONSIVE DEL TEMA UNIFICADO
+   ---------------------------------------------------------- */
+@media (max-width: 900px) {
+    .modal-contenido {
+        max-width: calc(100vw - 28px);
+        padding: 20px;
+    }
+
+    .lista-productos {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .ventas-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .panel-ventas {
+        border-right: 0;
+        border-bottom: 1px solid var(--border-color);
+        padding-right: 0;
+        padding-bottom: 16px;
+    }
+}
+
+@media (max-width: 650px) {
+    .barra-herramientas {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .buscador,
+    .barra-herramientas select {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .lista-productos {
+        grid-template-columns: 1fr;
+    }
+
+    .fila {
+        grid-template-columns: 1fr;
+    }
+
+    .fila-nueva-equivalencia {
+        grid-template-columns: 1fr;
+    }
+
+    .modal-contenido {
+        padding: 16px;
+    }
+
+    .modal-acciones,
+    .acciones-venta {
+        flex-wrap: wrap;
+    }
+
+    .modal-acciones button,
+    .acciones-venta button {
+        flex: 1 1 180px;
+    }
+
+    .tarjeta-categoria {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .tarjeta-categoria .acciones-producto {
+        width: 100%;
+    }
+
+    .tarjeta-categoria .acciones-producto button {
+        flex: 1;
+    }
+}

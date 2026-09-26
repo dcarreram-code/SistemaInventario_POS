@@ -26,16 +26,40 @@ namespace InventarioAPI.Controllers
             }).ToListAsync());
 
         [HttpGet("historial")]
-        public async Task<IActionResult> ObtenerHistorial()
+        public async Task<IActionResult> ObtenerHistorial(
+            [FromQuery] string? vehiculo,
+            [FromQuery] DateTime? desde,
+            [FromQuery] DateTime? hasta)
         {
-            var ventas = await _context.Ventas
-                .Where(v => v.Estado == "Completada")
+            var consulta = _context.Ventas
+                .Where(v => v.Estado == "Completada" || v.Estado == "Anulada");
+
+            if (!string.IsNullOrWhiteSpace(vehiculo))
+            {
+                var termino = vehiculo.Trim();
+                consulta = consulta.Where(v =>
+                    v.Vehiculo.Contains(termino) ||
+                    (v.Placa ?? "").Contains(termino));
+            }
+
+            if (desde.HasValue)
+                consulta = consulta.Where(v =>
+                    v.FechaCierre.HasValue &&
+                    v.FechaCierre.Value >= desde.Value.Date);
+
+            if (hasta.HasValue)
+                consulta = consulta.Where(v =>
+                    v.FechaCierre.HasValue &&
+                    v.FechaCierre.Value < hasta.Value.Date.AddDays(1));
+
+            var ventas = await consulta
                 .OrderByDescending(v => v.FechaCierre)
                 .Select(v => new
                 {
                     v.IdVenta,
                     v.Vehiculo,
                     v.Placa,
+                    v.Estado,
                     v.FechaApertura,
                     v.FechaCierre,
                     v.Total,
