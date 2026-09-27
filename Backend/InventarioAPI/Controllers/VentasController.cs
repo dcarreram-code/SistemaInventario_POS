@@ -38,6 +38,8 @@ namespace InventarioAPI.Controllers
                 v.Placa,
                 v.FechaCierre,
                 v.Total,
+                TotalPagado = v.Pagos.Sum(p => (decimal?)p.Monto) ?? 0,
+                SaldoPendiente = v.Total - (v.Pagos.Sum(p => (decimal?)p.Monto) ?? 0),
                 CantidadProductos = v.Detalles.Sum(d => (int?)d.Cantidad) ?? 0
             })
             .ToListAsync());
@@ -176,6 +178,8 @@ namespace InventarioAPI.Controllers
                     v.FechaApertura,
                     v.FechaCierre,
                     v.Total,
+                    TotalPagado = v.Pagos.Sum(p => (decimal?)p.Monto) ?? 0,
+                    SaldoPendiente = v.Total - (v.Pagos.Sum(p => (decimal?)p.Monto) ?? 0),
                     Detalles = v.Detalles.Select(d => new
                     {
                         d.IdDetalleVenta,
@@ -186,6 +190,12 @@ namespace InventarioAPI.Controllers
                         d.PrecioUnitario,
                         d.CostoUnitario,
                         d.Subtotal
+                    }),
+                    Pagos = v.Pagos.OrderBy(p => p.Fecha).ThenBy(p => p.IdPagoVenta).Select(p => new
+                    {
+                        p.IdPagoVenta,
+                        p.Monto,
+                        p.Fecha
                     })
                 })
                 .FirstOrDefaultAsync();
@@ -290,6 +300,12 @@ namespace InventarioAPI.Controllers
             venta.Total = venta.Detalles.Sum(d => d.Subtotal);
             venta.Estado = "Completada";
             venta.FechaCierre = DateTime.Now;
+            _context.PagosVenta.Add(new PagoVenta
+            {
+                IdVenta = venta.IdVenta,
+                Monto = venta.Total,
+                Fecha = venta.FechaCierre.Value
+            });
             await _context.SaveChangesAsync();
             await transaccion.CommitAsync();
             return Ok(new { mensaje = "Venta concretada correctamente.", venta.IdVenta, venta.Total });
@@ -337,6 +353,56 @@ namespace InventarioAPI.Controllers
                 mensaje = "La venta quedó registrada en pendientes de pago.",
                 venta.IdVenta,
                 venta.Total
+            });
+        }
+
+        [HttpPost("{id}/pagos")]
+        public async Task<IActionResult> RegistrarPago(int id, RegistrarPagoVentaDTO dto)
+        {
+            if (dto.Monto <= 0)
+                return BadRequest(new { mensaje = "El monto del pago debe ser mayor que cero." });
+            if (decimal.Round(dto.Monto, 2) != dto.Monto)
+                return BadRequest(new { mensaje = "El monto del pago solo puede tener hasta dos decimales." });
+
+            await using var transaccion = await _context.Database.BeginTransactionAsync(IsolationLevel.Serializable);
+            var venta = await _context.Ventas.Include(v => v.Pagos)
+                .FirstOrDefaultAsync(v => v.IdVenta == id && v.Estado == "PendientePago");
+            if (venta == null)
+                return BadRequest(new { mensaje = "La venta no está pendiente de pago." });
+
+            var totalPagado = venta.Pagos.Sum(p => p.Monto);
+            var saldoPendiente = venta.Total - totalPagado;
+            if (dto.Monto > saldoPendiente)
+                return BadRequest(new { mensaje = $"El pago no puede superar el saldo pendiente de Q{saldoPendiente:F2}." });
+
+            var fechaPago = DateTime.Now;
+            var pago = new PagoVenta
+            {
+                IdVenta = venta.IdVenta,
+                Monto = dto.Monto,
+                Fecha = fechaPago
+            };
+            _context.PagosVenta.Add(pago);
+
+            var nuevoSaldo = saldoPendiente - dto.Monto;
+            if (nuevoSaldo == 0)
+            {
+                venta.Estado = "Completada";
+                venta.FechaCierre = fechaPago;
+            }
+
+            await _context.SaveChangesAsync();
+            await transaccion.CommitAsync();
+            return Ok(new
+            {
+                mensaje = nuevoSaldo == 0
+                    ? "Pago registrado. La venta quedó saldada y se agregó al historial."
+                    : "Abono registrado correctamente.",
+                venta.IdVenta,
+                Pago = new { pago.IdPagoVenta, pago.Monto, pago.Fecha },
+                TotalPagado = totalPagado + dto.Monto,
+                SaldoPendiente = nuevoSaldo,
+                VentaCompletada = nuevoSaldo == 0
             });
         }
 

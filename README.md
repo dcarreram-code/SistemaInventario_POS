@@ -27,3 +27,6 @@ para la logica y comportamiento de la aplicacion css para el estilo del programa
 
 Para habilitar los datos de cliente de las ventas al crédito en una base de datos existente,
 ejecuta `Backend/Scripts/20260927_agregar_datos_ventas_credito.sql`.
+
+Para habilitar el registro de pagos y abonos de ventas, ejecuta
+`Backend/Scripts/20260927_crear_pagos_ventas.sql` después de crear el módulo de ventas.

@@ -22,6 +22,8 @@ namespace InventarioAPI.Data
 
         public DbSet<MovimientoInventario> MovimientosInventario { get; set; }
 
+        public DbSet<PagoVenta> PagosVenta { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -161,6 +163,17 @@ namespace InventarioAPI.Data
                 entity.HasOne(m => m.Venta).WithMany(v => v.Movimientos).HasForeignKey(m => m.IdVenta).OnDelete(DeleteBehavior.Restrict);
             });
 
+            modelBuilder.Entity<PagoVenta>(entity =>
+            {
+                entity.ToTable("PagosVenta");
+                entity.HasKey(p => p.IdPagoVenta);
+                entity.Property(p => p.Monto).HasPrecision(10, 2);
+                entity.HasIndex(p => new { p.IdVenta, p.Fecha });
+                entity.HasOne(p => p.Venta)
+                    .WithMany(v => v.Pagos)
+                    .HasForeignKey(p => p.IdVenta)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
 
             
         }
