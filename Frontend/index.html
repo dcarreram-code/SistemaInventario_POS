@@ -316,6 +316,15 @@
                 <button id="btnLimpiarHistorial" type="button" class="btn-secundario">Limpiar</button>
             </div>
 
+            <div id="filtrosPendientesPago" class="filtros-pendientes-pago" style="display: none;">
+                <label for="busquedaPendientesPago">Buscar por cliente, teléfono, vehículo o placa</label>
+                <div class="buscador-pendientes-pago">
+                    <input id="busquedaPendientesPago" type="search" placeholder="Escribe un nombre, teléfono o placa..." autocomplete="off">
+                    <button id="btnLimpiarBusquedaPendientes" type="button" class="btn-secundario">Limpiar</button>
+                </div>
+                <p id="resumenPendientesPago" aria-live="polite"></p>
+            </div>
+
             <div class="ventas-layout">
                 <aside class="panel-ventas">
                     <button id="btnNuevaVenta" class="btn-principal">+ Nueva cuenta</button>
@@ -333,6 +342,19 @@
                     <div id="contenidoVenta" style="display: none;">
                         <h3 id="tituloVenta"></h3>
                         <p id="clienteVenta" class="cliente-venta" style="display: none;"></p>
+                        <section id="panelPagosVenta" class="panel-pagos-venta" style="display: none;">
+                            <h4>Estado de cuenta</h4>
+                            <p id="resumenPagosVenta"></p>
+                            <form id="formRegistrarPago" class="form-registrar-pago">
+                                <label for="montoPagoVenta">Monto del abono</label>
+                                <div class="entrada-pago-venta">
+                                    <input id="montoPagoVenta" type="number" min="0.01" step="0.01" required>
+                                    <button type="submit" class="btn-principal">Registrar abono</button>
+                                    <button id="btnLiquidarVenta" type="button" class="btn-secundario">Pagar saldo completo</button>
+                                </div>
+                            </form>
+                            <div id="listaPagosVenta" class="lista-pagos-venta"></div>
+                        </section>
                         <div class="agregar-producto-venta">
                             <input id="buscarProductoVenta" placeholder="Buscar producto o equivalencia">
                             <input id="cantidadProductoVenta" type="number" min="1" value="1">

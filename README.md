@@ -25,5 +25,7 @@ para la logica y comportamiento de la aplicacion css para el estilo del programa
 - Modulo de clientes
 - Usuarios, Contraseñas y Permisos
 
-Para habilitar los datos de cliente de las ventas al crédito en una base de datos existente,
-ejecuta `Backend/Scripts/20260927_agregar_datos_ventas_credito.sql`.
+Para habilitar ventas al crédito en una base de datos existente, ejecuta en este orden:
+
+1. `Backend/Scripts/20260927_agregar_datos_ventas_credito.sql`
+2. `Backend/Scripts/20260927_agregar_pagos_ventas_credito.sql`

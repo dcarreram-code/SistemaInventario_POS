@@ -1761,6 +1761,124 @@ button {
     text-align: center;
 }
 
+.filtros-pendientes-pago {
+    display: grid;
+    gap: 8px;
+    margin-bottom: 14px;
+    padding: 14px;
+    background: #fff7ed;
+    border: 1px solid #fed7aa;
+    border-radius: 9px;
+}
+
+.buscador-pendientes-pago {
+    display: flex;
+    gap: 8px;
+}
+
+.buscador-pendientes-pago input {
+    flex: 1;
+    min-width: 0;
+    padding: .7rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    font: inherit;
+}
+
+#resumenPendientesPago {
+    margin: 0;
+    color: #6b7280;
+    font-size: .9rem;
+}
+
+.tarjeta-pendiente-pago .historial-venta-info {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.tarjeta-pendiente-pago .saldo-pendiente {
+    color: #92400e;
+    font-size: .9rem;
+}
+
+.panel-pagos-venta {
+    margin: 16px 0;
+    padding: 14px;
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
+    border-radius: 9px;
+}
+
+.panel-pagos-venta h4,
+.panel-pagos-venta p {
+    margin-top: 0;
+}
+
+.resumen-saldo-venta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 18px;
+    font-weight: 600;
+}
+
+.saldo-restante {
+    color: #b45309;
+}
+
+.saldo-liquidado {
+    color: #15803d;
+}
+
+.form-registrar-pago {
+    display: grid;
+    gap: 8px;
+    margin: 12px 0;
+}
+
+.entrada-pago-venta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.entrada-pago-venta input {
+    flex: 1 1 110px;
+    min-width: 0;
+    padding: .65rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    font: inherit;
+}
+
+.lista-pagos-venta {
+    display: grid;
+    gap: 6px;
+}
+
+.fila-pago-venta {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 8px 0;
+    border-top: 1px solid #e2e8f0;
+}
+
+.pagos-ticket {
+    margin-top: 16px;
+    padding-top: 10px;
+    border-top: 1px solid #d1d5db;
+}
+
+.pagos-ticket h3 {
+    margin-bottom: 8px;
+}
+
+.pagos-ticket p {
+    margin: 4px 0;
+    font-size: .9rem;
+}
+
 .agregar-producto-venta {
     padding: 14px;
     background: #f3f4f6;

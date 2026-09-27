@@ -26,21 +26,36 @@ namespace InventarioAPI.Controllers
             }).ToListAsync());
 
         [HttpGet("pendientes-pago")]
-        public async Task<IActionResult> ObtenerPendientesPago() => Ok(await _context.Ventas
-            .Where(v => v.Estado == "PendientePago")
-            .OrderByDescending(v => v.FechaCierre)
-            .Select(v => new
+        public async Task<IActionResult> ObtenerPendientesPago([FromQuery] string? busqueda)
+        {
+            var consulta = _context.Ventas.Where(v => v.Estado == "PendientePago");
+            if (!string.IsNullOrWhiteSpace(busqueda))
             {
-                v.IdVenta,
-                v.NombreCliente,
-                v.TelefonoCliente,
-                v.Vehiculo,
-                v.Placa,
-                v.FechaCierre,
-                v.Total,
-                CantidadProductos = v.Detalles.Sum(d => (int?)d.Cantidad) ?? 0
-            })
-            .ToListAsync());
+                var termino = busqueda.Trim();
+                consulta = consulta.Where(v =>
+                    (v.NombreCliente ?? "").Contains(termino) ||
+                    (v.TelefonoCliente ?? "").Contains(termino) ||
+                    v.Vehiculo.Contains(termino) ||
+                    (v.Placa ?? "").Contains(termino));
+            }
+
+            return Ok(await consulta
+                .OrderByDescending(v => v.FechaApertura)
+                .Select(v => new
+                {
+                    v.IdVenta,
+                    v.NombreCliente,
+                    v.TelefonoCliente,
+                    v.Vehiculo,
+                    v.Placa,
+                    v.FechaApertura,
+                    v.Total,
+                    TotalPagado = v.Pagos.Sum(p => (decimal?)p.Monto) ?? 0,
+                    SaldoPendiente = v.Total - (v.Pagos.Sum(p => (decimal?)p.Monto) ?? 0),
+                    CantidadProductos = v.Detalles.Sum(d => (int?)d.Cantidad) ?? 0
+                })
+                .ToListAsync());
+        }
 
         [HttpGet("historial")]
         public async Task<IActionResult> ObtenerHistorial(
@@ -176,6 +191,16 @@ namespace InventarioAPI.Controllers
                     v.FechaApertura,
                     v.FechaCierre,
                     v.Total,
+                    TotalPagado = v.Pagos.Sum(p => (decimal?)p.Monto) ?? 0,
+                    SaldoPendiente = v.Total - (v.Pagos.Sum(p => (decimal?)p.Monto) ?? 0),
+                    Pagos = v.Pagos
+                        .OrderBy(p => p.FechaPago)
+                        .Select(p => new
+                        {
+                            p.IdPagoVenta,
+                            p.Monto,
+                            p.FechaPago
+                        }),
                     Detalles = v.Detalles.Select(d => new
                     {
                         d.IdDetalleVenta,
@@ -328,7 +353,7 @@ namespace InventarioAPI.Controllers
             venta.Placa = placa;
             venta.Total = venta.Detalles.Sum(d => d.Subtotal);
             venta.Estado = "PendientePago";
-            venta.FechaCierre = DateTime.Now;
+            venta.FechaCierre = null;
 
             await _context.SaveChangesAsync();
             await transaccion.CommitAsync();
@@ -337,6 +362,55 @@ namespace InventarioAPI.Controllers
                 mensaje = "La venta quedó registrada en pendientes de pago.",
                 venta.IdVenta,
                 venta.Total
+            });
+        }
+
+        [HttpPost("{id}/pagos")]
+        public async Task<IActionResult> RegistrarPago(int id, RegistrarPagoVentaDTO dto)
+        {
+            if (decimal.Round(dto.Monto, 2) != dto.Monto)
+                return BadRequest(new { mensaje = "El monto del pago debe tener como máximo dos decimales." });
+
+            await using var transaccion = await _context.Database.BeginTransactionAsync(IsolationLevel.Serializable);
+            var venta = await _context.Ventas
+                .Include(v => v.Pagos)
+                .FirstOrDefaultAsync(v => v.IdVenta == id && v.Estado == "PendientePago");
+            if (venta == null)
+                return BadRequest(new { mensaje = "La venta no está pendiente de pago." });
+
+            var saldo = venta.Total - venta.Pagos.Sum(p => p.Monto);
+            if (dto.Monto > saldo)
+                return BadRequest(new { mensaje = $"El pago no puede superar el saldo pendiente de Q{saldo:F2}." });
+
+            var pago = new PagoVenta
+            {
+                IdVenta = venta.IdVenta,
+                Monto = dto.Monto,
+                FechaPago = DateTime.Now
+            };
+            _context.PagosVenta.Add(pago);
+
+            var totalPagado = venta.Pagos.Sum(p => p.Monto) + pago.Monto;
+            var liquidada = totalPagado == venta.Total;
+            if (liquidada)
+            {
+                venta.Estado = "Completada";
+                venta.FechaCierre = pago.FechaPago;
+            }
+
+            await _context.SaveChangesAsync();
+            await transaccion.CommitAsync();
+            return Ok(new
+            {
+                mensaje = liquidada
+                    ? "Pago completo registrado. La venta pasó al historial."
+                    : "Abono registrado correctamente.",
+                venta.IdVenta,
+                pago.Monto,
+                pago.FechaPago,
+                totalPagado,
+                saldoPendiente = venta.Total - totalPagado,
+                venta.Estado
             });
         }
 
