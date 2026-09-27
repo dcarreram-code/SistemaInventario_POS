@@ -14,5 +14,6 @@ namespace InventarioAPI.Models
         public decimal Total { get; set; }
         public ICollection<DetalleVenta> Detalles { get; set; } = new List<DetalleVenta>();
         public ICollection<MovimientoInventario> Movimientos { get; set; } = new List<MovimientoInventario>();
+        public ICollection<PagoVenta> Pagos { get; set; } = new List<PagoVenta>();
     }
 }

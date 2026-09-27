@@ -11,6 +11,11 @@ let ventaActual = null;
 let temporizadorBusquedaVenta = null;
 let mostrandoHistorial = false;
 let mostrandoPendientesPago = false;
+let ventasPendientesPago = [];
+const filtrosPendientesPago = document.getElementById("filtrosPendientesPago");
+const buscarPendientePago = document.getElementById("buscarPendientePago");
+const contadorPendientesPago = document.getElementById("contadorPendientesPago");
+const resumenPagosVenta = document.getElementById("resumenPagosVenta");
 
 async function respuestaVenta(url, opciones = {}) {
     const respuesta = await fetch(`${API_URL}${url}`, opciones);
@@ -39,14 +44,44 @@ async function cargarVentasAbiertas() {
 }
 
 async function cargarVentasPendientesPago() {
-    const ventas = await respuestaVenta("/ventas/pendientes-pago");
+    ventasPendientesPago = await respuestaVenta("/ventas/pendientes-pago");
+    mostrarVentasPendientesPago();
+}
+
+function mostrarVentasPendientesPago() {
     listaVentasAbiertas.replaceChildren();
+    const termino = buscarPendientePago.value.trim().toLocaleLowerCase("es-GT")
+        .normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    const ventas = ventasPendientesPago.filter(venta =>
+        [
+            venta.idVenta,
+            venta.nombreCliente,
+            venta.telefonoCliente,
+            venta.vehiculo,
+            venta.placa
+        ].some(valor => String(valor || "")
+            .toLocaleLowerCase("es-GT")
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .includes(termino))
+    );
+    contadorPendientesPago.textContent =
+        `${ventas.length} de ${ventasPendientesPago.length} cuenta(s) pendiente(s)`;
 
     if (!ventas.length) {
-        listaVentasAbiertas.innerHTML = `
-            <div class="historial-vacio">
-                <strong>No hay ventas pendientes de pago</strong>
-            </div>`;
+        const vacio = document.createElement("div");
+        vacio.className = "historial-vacio";
+        const titulo = document.createElement("strong");
+        titulo.textContent = ventasPendientesPago.length
+            ? "No hay cuentas que coincidan con la búsqueda"
+            : "No hay ventas pendientes de pago";
+        vacio.appendChild(titulo);
+        if (ventasPendientesPago.length) {
+            const sugerencia = document.createElement("span");
+            sugerencia.textContent = "Prueba con otro nombre, teléfono, vehículo, placa o número de venta.";
+            vacio.appendChild(sugerencia);
+        }
+        listaVentasAbiertas.appendChild(vacio);
         return;
     }
 
@@ -67,12 +102,14 @@ async function cargarVentasPendientesPago() {
         telefono.textContent = venta.telefonoCliente;
         const fecha = document.createElement("small");
         fecha.textContent = `${new Date(venta.fechaCierre).toLocaleString("es-GT")} · ${venta.cantidadProductos} producto(s)`;
+        const abonos = document.createElement("small");
+        abonos.textContent = `Abonado: Q${Number(venta.totalPagado).toFixed(2)}`;
 
-        informacion.append(cliente, vehiculo, telefono, fecha);
-        const total = document.createElement("strong");
-        total.className = "historial-venta-total";
-        total.textContent = `Q${Number(venta.total).toFixed(2)}`;
-        boton.append(informacion, total);
+        informacion.append(cliente, vehiculo, telefono, fecha, abonos);
+        const saldo = document.createElement("strong");
+        saldo.className = "historial-venta-total saldo-pendiente";
+        saldo.textContent = `Saldo Q${Number(venta.saldoPendiente).toFixed(2)}`;
+        boton.append(informacion, saldo);
         listaVentasAbiertas.appendChild(boton);
     });
 }
@@ -224,6 +261,7 @@ async function abrirVenta(id) {
 
     const accionesVenta = document.querySelector(".acciones-venta");
     const btnVerTicket = document.getElementById("btnVerTicket");
+    const btnRegistrarPago = document.getElementById("btnRegistrarPago");
     const btnAnularVenta = document.getElementById("btnAnularVenta");
     const btnCancelarVenta = document.getElementById("btnCancelarVenta");
     const btnConcretarVenta = document.getElementById("btnConcretarVenta");
@@ -250,8 +288,11 @@ async function abrirVenta(id) {
         esVentaCompletadaEnHistorial ? "inline-flex" : "none";
     btnVerTicket.style.display =
         (mostrandoHistorial || mostrandoPendientesPago) ? "inline-flex" : "none";
-    clienteVenta.style.display = esVentaPendientePago ? "block" : "none";
-    clienteVenta.textContent = esVentaPendientePago
+    btnRegistrarPago.style.display =
+        esVentaPendientePago ? "inline-flex" : "none";
+    const ventaConCliente = Boolean(ventaActual.nombreCliente);
+    clienteVenta.style.display = ventaConCliente ? "block" : "none";
+    clienteVenta.textContent = ventaConCliente
         ? `Cliente: ${ventaActual.nombreCliente} · Teléfono: ${ventaActual.telefonoCliente}`
         : "";
 
@@ -269,6 +310,7 @@ async function abrirVenta(id) {
     } else {
         modalVentas.classList.remove("modo-historial");
     }
+    modalVentas.classList.toggle("modo-pendientes-pago", mostrandoPendientesPago);
 
     if (mostrandoPendientesPago) await cargarVentasPendientesPago();
     else if (!mostrandoHistorial) await cargarVentasAbiertas();
@@ -287,6 +329,24 @@ function mostrarDetallesVenta() {
         detallesVenta.appendChild(fila);
     });
     document.getElementById("totalVenta").textContent = `Q${total.toFixed(2)}`;
+
+    const pagos = ventaActual.pagos || [];
+    resumenPagosVenta.replaceChildren();
+    if (!pagos.length) return;
+
+    const encabezado = document.createElement("h4");
+    encabezado.textContent = "Pagos registrados";
+    const lista = document.createElement("ul");
+    pagos.forEach(pago => {
+        const item = document.createElement("li");
+        item.textContent = `${new Date(pago.fecha).toLocaleString("es-GT")} · Q${Number(pago.monto).toFixed(2)}`;
+        lista.appendChild(item);
+    });
+    const totalPagado = Number(ventaActual.totalPagado || 0);
+    const saldoPendiente = Number(ventaActual.saldoPendiente ?? ventaActual.total - totalPagado);
+    const resumen = document.createElement("p");
+    resumen.textContent = `Abonado: Q${totalPagado.toFixed(2)} · Saldo pendiente: Q${saldoPendiente.toFixed(2)}`;
+    resumenPagosVenta.append(encabezado, lista, resumen);
 }
 
 function mostrarTicketVenta(venta) {
@@ -373,6 +433,28 @@ function mostrarTicketVenta(venta) {
     });
     contenidoTicket.appendChild(tabla);
 
+    const pagos = venta.pagos || [];
+    if (pagos.length) {
+        const seccionPagos = document.createElement("section");
+        seccionPagos.className = "pagos-ticket";
+        const tituloPagos = document.createElement("strong");
+        tituloPagos.textContent = "Pagos registrados";
+        seccionPagos.appendChild(tituloPagos);
+        pagos.forEach(pago => {
+            const lineaPago = document.createElement("p");
+            lineaPago.textContent =
+                `${new Date(pago.fecha).toLocaleString("es-GT")} · ${moneda.format(Number(pago.monto))}`;
+            seccionPagos.appendChild(lineaPago);
+        });
+        const totalPagado = Number(venta.totalPagado || 0);
+        const saldoPendiente = Number(venta.saldoPendiente ?? venta.total - totalPagado);
+        const resumenPago = document.createElement("p");
+        resumenPago.textContent =
+            `Abonado: ${moneda.format(totalPagado)} · Saldo: ${moneda.format(saldoPendiente)}`;
+        seccionPagos.appendChild(resumenPago);
+        contenidoTicket.appendChild(seccionPagos);
+    }
+
     const total = document.createElement("p");
     total.className = "total-ticket";
     const etiquetaTotal = document.createElement("span");
@@ -405,16 +487,81 @@ document.getElementById("btnImprimirTicket").addEventListener("click", () => {
     window.print();
 });
 
+const modalRegistrarPago = document.getElementById("modalRegistrarPago");
+const formRegistrarPago = document.getElementById("formRegistrarPago");
+const montoPago = document.getElementById("montoPago");
+
+function cerrarModalRegistrarPago() {
+    modalRegistrarPago.classList.remove("activo");
+    formRegistrarPago.reset();
+}
+
+document.getElementById("btnRegistrarPago").addEventListener("click", () => {
+    if (!ventaActual || ventaActual.estado !== "PendientePago") return;
+    const saldoPendiente = Number(ventaActual.saldoPendiente);
+    document.getElementById("saldoPagoPendiente").textContent =
+        `Q${saldoPendiente.toFixed(2)}`;
+    montoPago.max = saldoPendiente.toFixed(2);
+    montoPago.value = saldoPendiente.toFixed(2);
+    modalRegistrarPago.classList.add("activo");
+    montoPago.focus();
+    montoPago.select();
+});
+
+document.getElementById("btnCerrarRegistrarPago").addEventListener("click", cerrarModalRegistrarPago);
+document.getElementById("btnCancelarRegistrarPago").addEventListener("click", cerrarModalRegistrarPago);
+
+formRegistrarPago.addEventListener("submit", async evento => {
+    evento.preventDefault();
+    if (!ventaActual || ventaActual.estado !== "PendientePago") return;
+
+    const idVenta = ventaActual.idVenta;
+    const botonGuardar = formRegistrarPago.querySelector('button[type="submit"]');
+    botonGuardar.disabled = true;
+    try {
+        const resultado = await respuestaVenta(`/ventas/${idVenta}/pagos`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ monto: Number(montoPago.value) })
+        });
+        cerrarModalRegistrarPago();
+
+        if (resultado.ventaCompletada) {
+            mostrandoHistorial = true;
+            mostrandoPendientesPago = false;
+            modalVentas.classList.remove("modo-pendientes-pago");
+            filtrosPendientesPago.style.display = "none";
+            filtrosHistorialVentas.style.display = "grid";
+            historialDesde.value = "";
+            historialHasta.value = "";
+            historialBusqueda.value = "";
+            document.getElementById("tituloModalVentas").textContent = "Historial de ventas";
+            await cargarHistorialVentas();
+        } else {
+            await cargarVentasPendientesPago();
+        }
+
+        await abrirVenta(idVenta);
+        alert(resultado.mensaje);
+    } catch (error) {
+        alert(error.message);
+    } finally {
+        botonGuardar.disabled = false;
+    }
+});
+
 document.getElementById("btnVentas").addEventListener("click", async () => {
     mostrandoHistorial = false;
     mostrandoPendientesPago = false;
     ventaActual = null;
 
     modalVentas.classList.remove("modo-historial");
+    modalVentas.classList.remove("modo-pendientes-pago");
 
     if (filtrosHistorialVentas) {
         filtrosHistorialVentas.style.display = "none";
     }
+    filtrosPendientesPago.style.display = "none";
 
     contenidoVenta.style.display = "none";
     formNuevaVenta.style.display = "none";
@@ -437,6 +584,7 @@ document.getElementById("btnHistorialVentas").addEventListener("click", async ()
     ventaActual = null;
 
     modalVentas.classList.add("modo-historial");
+    modalVentas.classList.remove("modo-pendientes-pago");
 
     contenidoVenta.style.display = "none";
     formNuevaVenta.style.display = "none";
@@ -447,6 +595,7 @@ document.getElementById("btnHistorialVentas").addEventListener("click", async ()
     if (filtrosHistorialVentas) {
         filtrosHistorialVentas.style.display = "grid";
     }
+    filtrosPendientesPago.style.display = "none";
 
     modalVentas.classList.add("activo");
 
@@ -460,14 +609,18 @@ document.getElementById("btnHistorialVentas").addEventListener("click", async ()
 document.getElementById("btnVentasPendientesPago").addEventListener("click", async () => {
     mostrandoHistorial = false;
     mostrandoPendientesPago = true;
+    buscarPendientePago.value = "";
     ventaActual = null;
     modalVentas.classList.add("modo-historial");
+    modalVentas.classList.add("modo-pendientes-pago");
     contenidoVenta.style.display = "none";
     formNuevaVenta.style.display = "none";
     document.getElementById("tituloModalVentas").textContent = "Pendientes de pago";
     document.getElementById("btnNuevaVenta").style.display = "none";
     filtrosHistorialVentas.style.display = "none";
+    filtrosPendientesPago.style.display = "block";
     modalVentas.classList.add("activo");
+    buscarPendientePago.focus();
 
     try {
         await cargarVentasPendientesPago();
@@ -476,10 +629,16 @@ document.getElementById("btnVentasPendientesPago").addEventListener("click", asy
     }
 });
 
+buscarPendientePago.addEventListener("input", mostrarVentasPendientesPago);
+
 document.getElementById("btnCerrarVentas").addEventListener("click", () => modalVentas.classList.remove("activo"));
 document.getElementById("btnNuevaVenta").addEventListener("click", () => {
     mostrandoHistorial = false;
     mostrandoPendientesPago = false;
+    filtrosHistorialVentas.style.display = "none";
+    filtrosPendientesPago.style.display = "none";
+    modalVentas.classList.remove("modo-historial");
+    modalVentas.classList.remove("modo-pendientes-pago");
     ventaActual = null;
     contenidoVenta.style.display = "none";
     formNuevaVenta.reset();
@@ -595,9 +754,12 @@ formVentaCredito.addEventListener("submit", async evento => {
         formNuevaVenta.style.display = "none";
         contenidoVenta.style.display = "none";
         modalVentas.classList.add("modo-historial");
+        modalVentas.classList.add("modo-pendientes-pago");
         document.getElementById("tituloModalVentas").textContent = "Pendientes de pago";
         document.getElementById("btnNuevaVenta").style.display = "none";
         filtrosHistorialVentas.style.display = "none";
+        filtrosPendientesPago.style.display = "block";
+        buscarPendientePago.value = "";
         await cargarVentasPendientesPago();
         if (idVenta) await abrirVenta(idVenta);
         await cargarProductos();

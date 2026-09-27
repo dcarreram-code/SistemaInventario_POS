@@ -316,6 +316,12 @@
                 <button id="btnLimpiarHistorial" type="button" class="btn-secundario">Limpiar</button>
             </div>
 
+            <div id="filtrosPendientesPago" class="busqueda-pendientes-pago" style="display: none;">
+                <label for="buscarPendientePago">Buscar por cliente, teléfono, vehículo, placa o número de venta</label>
+                <input id="buscarPendientePago" type="search" placeholder="Escribe un nombre, teléfono, placa o número">
+                <span id="contadorPendientesPago" aria-live="polite"></span>
+            </div>
+
             <div class="ventas-layout">
                 <aside class="panel-ventas">
                     <button id="btnNuevaVenta" class="btn-principal">+ Nueva cuenta</button>
@@ -340,8 +346,10 @@
                         </div>
                         <div id="detallesVenta" class="detalles-venta"></div>
                         <p class="total-venta">Total: <strong id="totalVenta">Q0.00</strong></p>
+                        <section id="resumenPagosVenta" class="resumen-pagos-venta"></section>
                         <div class="acciones-venta">
                             <button id="btnVerTicket" type="button" class="btn-secundario" style="display: none;">Ver ticket</button>
+                            <button id="btnRegistrarPago" type="button" class="btn-principal" style="display: none;">Registrar pago</button>
                             <button id="btnAnularVenta" type="button" class="btn-desactivar" style="display: none;">Anular venta</button>
                             <button id="btnCancelarVenta" type="button" class="btn-secundario">Cancelar cuenta</button>
                             <button id="btnConcretarVenta" type="button" class="btn-principal">Cobrar y descontar stock</button>
@@ -350,6 +358,25 @@
                     </div>
                 </section>
             </div>
+        </div>
+    </div>
+
+    <div id="modalRegistrarPago" class="modal" aria-labelledby="tituloRegistrarPago" aria-modal="true" role="dialog">
+        <div class="modal-contenido modal-registrar-pago">
+            <div class="modal-encabezado">
+                <h2 id="tituloRegistrarPago">Registrar pago o abono</h2>
+                <button id="btnCerrarRegistrarPago" type="button" class="btn-cerrar" aria-label="Cerrar">&times;</button>
+            </div>
+            <form id="formRegistrarPago" class="form-registrar-pago">
+                <p>Saldo pendiente: <strong id="saldoPagoPendiente">Q0.00</strong></p>
+                <p>Ingresa el saldo completo para liquidar la cuenta, o un monto menor para registrar un abono.</p>
+                <label for="montoPago">Monto recibido</label>
+                <input id="montoPago" type="number" min="0.01" step="0.01" required>
+                <div class="modal-acciones">
+                    <button id="btnCancelarRegistrarPago" type="button" class="btn-secundario">Cancelar</button>
+                    <button type="submit" class="btn-principal">Guardar pago</button>
+                </div>
+            </form>
         </div>
     </div>
 
