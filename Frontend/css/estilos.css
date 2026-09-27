@@ -2004,3 +2004,875 @@ button {
         flex: 1;
     }
 }
+
+/* ==========================================================
+   TEMA UNIFICADO FINAL — INVENTARIO
+   ----------------------------------------------------------
+   Solo apariencia. No modifica IDs, estructura funcional,
+   endpoints ni lógica JavaScript.
+   ========================================================== */
+
+:root {
+    --primary: #dc2626;
+    --primary-hover: #b91c1c;
+    --secondary: #4b5563;
+    --secondary-hover: #374151;
+    --danger: #dc2626;
+    --danger-hover: #b91c1c;
+    --danger-bg: #fef2f2;
+    --success: #374151;
+    --success-hover: #111111;
+    --success-bg: #f3f4f6;
+    --bg-main: #f3f4f6;
+    --bg-surface: #ffffff;
+    --text-main: #111111;
+    --text-muted: #6b7280;
+    --border-color: #d1d5db;
+    --radius-sm: 7px;
+    --radius-md: 10px;
+    --radius-lg: 14px;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,.04);
+    --shadow-md: 0 4px 12px rgba(0,0,0,.07);
+    --shadow-lg: 0 14px 30px rgba(0,0,0,.12);
+}
+
+/* ----------------------------------------------------------
+   ELEMENTOS GENERALES
+   ---------------------------------------------------------- */
+
+body {
+    background: #f3f4f6;
+    color: #111111;
+}
+
+::selection {
+    background: #fecaca;
+    color: #111111;
+}
+
+input,
+select,
+textarea {
+    accent-color: #dc2626;
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+    outline: 2px solid rgba(220,38,38,.35);
+    outline-offset: 2px;
+}
+
+/* ----------------------------------------------------------
+   ENCABEZADO
+   ---------------------------------------------------------- */
+
+.encabezado {
+    background: #ffffff;
+    border-bottom: 1px solid #d1d5db;
+    box-shadow: 0 1px 4px rgba(0,0,0,.05);
+}
+
+.encabezado h1 {
+    color: #111111;
+    font-weight: 800;
+}
+
+.acciones-encabezado {
+    gap: 8px;
+}
+
+/* ----------------------------------------------------------
+   BOTONES
+   ---------------------------------------------------------- */
+
+button {
+    border-radius: 8px;
+    font-weight: 700;
+}
+
+.btn-principal {
+    background: #dc2626;
+    color: #ffffff;
+    border: 1px solid #dc2626;
+}
+
+.btn-principal:hover {
+    background: #b91c1c;
+    border-color: #b91c1c;
+    box-shadow: 0 4px 10px rgba(220,38,38,.16);
+}
+
+.btn-secundario {
+    background: #ffffff;
+    color: #111111;
+    border: 1px solid #d1d5db;
+}
+
+.btn-secundario:hover {
+    background: #f3f4f6;
+    border-color: #9ca3af;
+}
+
+.btn-editar,
+.btn-editar-categoria {
+    background: #f3f4f6;
+    color: #111111;
+    border: 1px solid #d1d5db;
+}
+
+.btn-editar:hover,
+.btn-editar-categoria:hover {
+    background: #e5e7eb;
+    border-color: #9ca3af;
+}
+
+.btn-desactivar,
+.btn-desactivar-categoria {
+    background: #fef2f2;
+    color: #dc2626;
+    border: 1px solid #fecaca;
+}
+
+.btn-desactivar:hover,
+.btn-desactivar-categoria:hover {
+    background: #fee2e2;
+    border-color: #fca5a5;
+}
+
+.btn-reactivar-categoria {
+    background: #f3f4f6;
+    color: #111111;
+    border: 1px solid #d1d5db;
+}
+
+.btn-reactivar-categoria:hover {
+    background: #e5e7eb;
+    color: #111111;
+}
+
+.btn-cerrar:hover {
+    color: #dc2626;
+    background: #fef2f2;
+}
+
+/* ----------------------------------------------------------
+   BUSCADOR Y FILTRO DE PRODUCTOS
+   ---------------------------------------------------------- */
+
+.barra-herramientas {
+    gap: 12px;
+}
+
+.buscador input,
+.barra-herramientas select {
+    height: 50px;
+    padding: 0 14px;
+    background: #ffffff;
+    border: 1px solid #d1d5db;
+    border-radius: 10px;
+    color: #111111;
+}
+
+.barra-herramientas select {
+    width: 220px;
+    min-width: 220px;
+}
+
+.buscador input:hover,
+.barra-herramientas select:hover {
+    border-color: #9ca3af;
+}
+
+.buscador input:focus,
+.barra-herramientas select:focus {
+    border-color: #dc2626;
+    box-shadow: 0 0 0 3px rgba(220,38,38,.12);
+}
+
+/* ----------------------------------------------------------
+   PRODUCTOS
+   ---------------------------------------------------------- */
+
+.productos h2 {
+    font-size: 1.3rem;
+    font-weight: 800;
+    margin-bottom: 16px;
+}
+
+.lista-productos {
+    gap: 14px;
+}
+
+.tarjeta-producto {
+    position: relative;
+    background: #ffffff;
+    border: 1px solid #d1d5db;
+    border-radius: 10px;
+    box-shadow: 0 1px 2px rgba(0,0,0,.04);
+    padding: 16px;
+    overflow: hidden;
+}
+
+.tarjeta-producto::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: #dc2626;
+}
+
+.tarjeta-producto:hover {
+    transform: translateY(-2px);
+    border-color: #dc2626;
+    box-shadow: 0 5px 14px rgba(0,0,0,.08);
+}
+
+.tarjeta-producto h3 {
+    color: #111111;
+    font-weight: 800;
+}
+
+.tarjeta-producto p {
+    color: #4b5563;
+}
+
+.tarjeta-producto .precio {
+    color: #dc2626;
+    font-weight: 800;
+}
+
+.tarjeta-producto .stock {
+    color: #111111;
+    background: #f3f4f6;
+    border-radius: 6px;
+    padding: 5px 8px;
+    width: fit-content;
+}
+
+.imagen-producto {
+    background: #f3f4f6;
+    border: 1px solid #e5e7eb;
+}
+
+.acciones-producto {
+    border-top-color: #e5e7eb;
+}
+
+/* ----------------------------------------------------------
+   MODALES GENERALES
+   ---------------------------------------------------------- */
+
+.modal {
+    background: rgba(17,24,39,.58);
+    backdrop-filter: blur(4px);
+}
+
+.modal-contenido {
+    background: #ffffff;
+    border: 1px solid #d1d5db;
+    border-radius: 14px;
+    box-shadow: 0 18px 45px rgba(0,0,0,.16);
+}
+
+.modal-encabezado {
+    padding-bottom: 12px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.modal-encabezado h2 {
+    color: #111111;
+    font-weight: 800;
+}
+
+.campo label {
+    color: #111111;
+    font-weight: 700;
+}
+
+.campo input,
+.campo select,
+.campo textarea,
+.form-venta input,
+.form-venta textarea,
+.agregar-producto-venta input,
+.form-reporte-ventas input,
+.busqueda-ventas input {
+    background: #ffffff;
+    color: #111111;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+}
+
+.campo input:hover,
+.campo select:hover,
+.campo textarea:hover,
+.form-venta input:hover,
+.form-venta textarea:hover,
+.agregar-producto-venta input:hover,
+.form-reporte-ventas input:hover,
+.busqueda-ventas input:hover {
+    border-color: #9ca3af;
+}
+
+.campo input:focus,
+.campo select:focus,
+.campo textarea:focus,
+.form-venta input:focus,
+.form-venta textarea:focus,
+.agregar-producto-venta input:focus,
+.form-reporte-ventas input:focus,
+.busqueda-ventas input:focus {
+    outline: none;
+    border-color: #dc2626;
+    box-shadow: 0 0 0 3px rgba(220,38,38,.12);
+}
+
+.modal-acciones {
+    padding-top: 14px;
+    border-top: 1px solid #e5e7eb;
+}
+
+/* ----------------------------------------------------------
+   CATEGORÍAS
+   ---------------------------------------------------------- */
+
+.lista-categorias {
+    gap: 12px;
+}
+
+.tarjeta-categoria {
+    position: relative;
+    background: #ffffff;
+    border: 1px solid #d1d5db;
+    border-radius: 10px;
+    padding: 15px 16px 15px 20px;
+    box-shadow: 0 1px 2px rgba(0,0,0,.04);
+    overflow: hidden;
+}
+
+.tarjeta-categoria::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: #dc2626;
+}
+
+.tarjeta-categoria:hover {
+    border-color: #dc2626;
+    box-shadow: 0 5px 14px rgba(0,0,0,.07);
+}
+
+.tarjeta-categoria h3 {
+    color: #111111;
+    font-weight: 800;
+}
+
+.tarjeta-categoria p {
+    color: #6b7280;
+}
+
+/* ----------------------------------------------------------
+   EQUIVALENCIAS
+   ---------------------------------------------------------- */
+
+.equivalencias-seccion {
+    padding: 15px;
+    background: #f3f4f6;
+    border: 1px solid #d1d5db;
+    border-left: 4px solid #dc2626;
+    border-radius: 9px;
+}
+
+.lista-equivalencias {
+    background: #ffffff;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+}
+
+.fila-equivalencia {
+    background: #ffffff;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.fila-equivalencia:hover {
+    background: #f3f4f6;
+}
+
+.datos-equivalencia .marca {
+    color: #111111;
+}
+
+.datos-equivalencia .codigo {
+    color: #6b7280;
+}
+
+.btn-eliminar-equivalencia {
+    background: #fef2f2;
+    color: #dc2626;
+    border: 1px solid #fecaca;
+}
+
+.btn-eliminar-equivalencia:hover {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+.form-nueva-equivalencia {
+    background: #ffffff;
+    border: 1px solid #d1d5db;
+    border-left: 3px solid #dc2626;
+    border-radius: 8px;
+}
+
+/* ----------------------------------------------------------
+   MOVIMIENTOS DE INVENTARIO
+   ---------------------------------------------------------- */
+
+.modal-movimientos {
+    width: 100%;
+    max-width: 1240px;
+    max-height: 90vh;
+}
+
+.modal-movimientos .modal-encabezado {
+    margin-bottom: 18px;
+}
+
+.form-movimiento {
+    margin-bottom: 22px;
+    padding: 18px;
+    background: #f3f4f6;
+    border: 1px solid #d1d5db;
+    border-left: 5px solid #dc2626;
+    border-radius: 10px;
+}
+
+.form-movimiento h3,
+.historial-movimientos h3 {
+    color: #111111;
+    font-size: 1rem;
+    font-weight: 800;
+}
+
+.form-movimiento .fila {
+    gap: 14px;
+}
+
+.form-movimiento .campo {
+    margin-bottom: 12px;
+}
+
+.form-movimiento .campo label {
+    font-size: .82rem;
+    font-weight: 800;
+}
+
+.form-movimiento input,
+.form-movimiento select,
+.form-movimiento textarea {
+    min-height: 42px;
+    padding: .65rem .8rem;
+    background: #ffffff;
+    border: 1px solid #c7cbd1;
+    border-radius: 8px;
+}
+
+.form-movimiento textarea {
+    min-height: 88px;
+    resize: vertical;
+}
+
+.form-movimiento .modal-acciones {
+    margin-top: 10px;
+    padding-top: 14px;
+}
+
+.busqueda-producto-movimiento {
+    position: relative;
+}
+
+.busqueda-producto-movimiento > input[type="search"] {
+    min-height: 42px;
+    padding: .65rem .8rem;
+    background: #ffffff;
+    border: 1px solid #c7cbd1;
+    border-radius: 8px;
+}
+
+.busqueda-producto-movimiento > input[type="search"]:focus {
+    border-color: #dc2626;
+    box-shadow: 0 0 0 3px rgba(220,38,38,.12);
+}
+
+.sugerencias-producto-movimiento {
+    background: #ffffff;
+    border: 1px solid #d1d5db;
+    border-top: 3px solid #dc2626;
+    border-radius: 8px;
+    box-shadow: 0 8px 18px rgba(0,0,0,.10);
+    overflow: hidden;
+}
+
+.sugerencias-producto-movimiento button {
+    background: #ffffff;
+    color: #111111;
+    border-bottom: 1px solid #e5e7eb;
+    border-radius: 0;
+    padding: 10px 12px;
+}
+
+.sugerencias-producto-movimiento button:hover {
+    background: #f3f4f6;
+}
+
+.sugerencias-producto-movimiento button strong {
+    color: #111111;
+}
+
+.sugerencias-producto-movimiento button span,
+.sin-sugerencias-producto {
+    color: #6b7280;
+}
+
+.historial-movimientos {
+    margin-bottom: 0;
+    padding: 18px;
+    background: #ffffff;
+    border: 1px solid #d1d5db;
+    border-top: 4px solid #dc2626;
+    border-radius: 10px;
+}
+
+.filtros-movimientos {
+    display: grid;
+    grid-template-columns: minmax(220px, 1.5fr) 160px 145px 145px auto auto;
+    gap: 10px;
+    align-items: end;
+    margin: 14px 0;
+    padding: 14px;
+    background: #f3f4f6;
+    border: 1px solid #d1d5db;
+    border-left: 4px solid #dc2626;
+    border-radius: 9px;
+}
+
+.filtros-movimientos label {
+    min-width: 0;
+    color: #111111;
+    font-size: .8rem;
+    font-weight: 800;
+}
+
+.filtros-movimientos input,
+.filtros-movimientos select {
+    width: 100%;
+    min-height: 40px;
+    padding: 0 .75rem;
+    background: #ffffff;
+    color: #111111;
+    border: 1px solid #c7cbd1;
+    border-radius: 8px;
+    font: inherit;
+}
+
+.filtros-movimientos input:focus,
+.filtros-movimientos select:focus {
+    outline: none;
+    border-color: #dc2626;
+    box-shadow: 0 0 0 3px rgba(220,38,38,.12);
+}
+
+.filtros-movimientos button {
+    min-height: 40px;
+}
+
+.tabla-movimientos-contenedor {
+    overflow: auto;
+    max-height: 390px;
+    border: 1px solid #d1d5db;
+    border-radius: 9px;
+    background: #ffffff;
+}
+
+.tabla-movimientos {
+    width: 100%;
+    min-width: 900px;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: .84rem;
+}
+
+.tabla-movimientos th,
+.tabla-movimientos td {
+    padding: 11px 12px;
+    border-bottom: 1px solid #e5e7eb;
+    text-align: left;
+    white-space: nowrap;
+}
+
+.tabla-movimientos th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: #111111;
+    color: #ffffff;
+    border-bottom: 3px solid #dc2626;
+    font-weight: 800;
+}
+
+.tabla-movimientos td {
+    background: #ffffff;
+    color: #374151;
+}
+
+.tabla-movimientos tbody tr:hover td {
+    background: #f9fafb;
+}
+
+.tabla-movimientos tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.tabla-movimientos td:last-child {
+    white-space: normal;
+    min-width: 190px;
+    color: #4b5563;
+}
+
+.cantidad-positiva {
+    color: #111111 !important;
+    font-weight: 800;
+}
+
+.cantidad-negativa {
+    color: #dc2626 !important;
+    font-weight: 800;
+}
+
+/* ----------------------------------------------------------
+   VENTAS ABIERTAS Y DETALLE
+   ---------------------------------------------------------- */
+
+#modalVentas:not(.modo-historial) .panel-ventas {
+    background: #f3f4f6;
+    border: 1px solid #d1d5db;
+    border-left: 4px solid #dc2626;
+    border-radius: 10px;
+    padding: 16px;
+}
+
+#modalVentas:not(.modo-historial) .tarjeta-venta {
+    background: #ffffff;
+    border: 1px solid #d1d5db;
+    border-left: 4px solid #dc2626;
+    border-radius: 8px;
+    box-shadow: 0 1px 2px rgba(0,0,0,.04);
+}
+
+#modalVentas:not(.modo-historial) .tarjeta-venta:hover {
+    border-color: #dc2626;
+    box-shadow: 0 4px 12px rgba(0,0,0,.07);
+}
+
+#modalVentas:not(.modo-historial) .detalle-venta {
+    background: #ffffff;
+    border: 1px solid #d1d5db;
+    border-top: 4px solid #dc2626;
+    border-radius: 10px;
+}
+
+.agregar-producto-venta {
+    background: #f3f4f6;
+    border: 1px solid #d1d5db;
+    border-left: 4px solid #dc2626;
+    border-radius: 9px;
+}
+
+.resultados-venta button {
+    background: #ffffff;
+    border: 1px solid #d1d5db;
+    border-left: 3px solid #dc2626;
+    border-radius: 7px;
+}
+
+.resultados-venta button:hover {
+    background: #f3f4f6;
+    border-color: #dc2626;
+}
+
+.total-venta {
+    background: #f3f4f6;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+}
+
+.total-venta strong {
+    color: #dc2626;
+}
+
+/* ----------------------------------------------------------
+   HISTORIAL DE VENTAS — CONSERVA EL ESTILO QUE YA APROBAMOS
+   ---------------------------------------------------------- */
+
+#modalVentas.modo-historial .filtros-historial-ventas {
+    background: #f3f4f6;
+    border: 1px solid #d1d5db;
+    border-left: 5px solid #dc2626;
+    border-radius: 10px;
+}
+
+#modalVentas.modo-historial .encabezado-mes-historial {
+    background: #111111;
+    border-left: 5px solid #dc2626;
+    border-radius: 9px;
+}
+
+#modalVentas.modo-historial .tarjeta-historial {
+    background: #ffffff;
+    border: 1px solid #d1d5db;
+    border-radius: 9px;
+}
+
+#modalVentas.modo-historial .tarjeta-historial:hover {
+    border-color: #dc2626;
+}
+
+#modalVentas.modo-historial .detalle-venta {
+    background: #ffffff;
+    border: 1px solid #d1d5db;
+    border-top: 4px solid #dc2626;
+    border-radius: 10px;
+}
+
+/* ----------------------------------------------------------
+   REPORTE DE VENTAS
+   ---------------------------------------------------------- */
+
+.modal-reporte-ventas {
+    max-width: 900px;
+}
+
+.form-reporte-ventas {
+    background: #f3f4f6;
+    border: 1px solid #d1d5db;
+    border-left: 4px solid #dc2626;
+    border-radius: 9px;
+}
+
+.encabezado-lista-reporte {
+    background: #111111;
+    border-left: 4px solid #dc2626;
+    border-radius: 8px;
+}
+
+.fila-reporte-venta {
+    background: #ffffff;
+    border: 1px solid #d1d5db;
+    border-left: 4px solid #dc2626;
+    border-radius: 8px;
+}
+
+.fila-reporte-venta:hover {
+    border-color: #dc2626;
+}
+
+.total-reporte-venta {
+    color: #dc2626;
+    font-weight: 800;
+}
+
+.resumen-reporte div {
+    background: #f3f4f6;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+}
+
+.resumen-ganancia {
+    background: #fef2f2 !important;
+    border-color: #dc2626 !important;
+}
+
+.resumen-ganancia strong {
+    color: #dc2626;
+}
+
+/* ----------------------------------------------------------
+   IMÁGENES / ARCHIVOS
+   ---------------------------------------------------------- */
+
+#imagenActual {
+    background: #f3f4f6;
+    border: 1px dashed #9ca3af;
+    border-radius: 8px;
+}
+
+input[type="file"] {
+    background: #ffffff;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    padding: 8px;
+}
+
+/* ----------------------------------------------------------
+   RESPONSIVE FINAL
+   ---------------------------------------------------------- */
+
+@media (max-width: 1000px) {
+    .filtros-movimientos {
+        grid-template-columns: 1fr 1fr 1fr;
+    }
+
+    .filtros-movimientos label:first-child {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 900px) {
+    .modal-movimientos {
+        max-width: calc(100vw - 28px);
+    }
+
+    .filtros-movimientos {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .filtros-movimientos label:first-child {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 650px) {
+    .filtros-movimientos {
+        grid-template-columns: 1fr;
+    }
+
+    .filtros-movimientos label:first-child {
+        grid-column: auto;
+    }
+
+    .form-movimiento .fila {
+        grid-template-columns: 1fr;
+    }
+
+    .form-movimiento .modal-acciones,
+    .filtros-movimientos button {
+        width: 100%;
+    }
+
+    .modal-movimientos {
+        max-height: 94vh;
+        padding: 16px;
+    }
+
+    .historial-movimientos,
+    .form-movimiento {
+        padding: 14px;
+    }
+}
