@@ -43,148 +43,221 @@ async function cargarProductos() {
 // MOSTRAR PRODUCTOS
 // ======================================================
 
-function mostrarProductos(lista) {
+function crearTarjetaProducto(producto, desactivado = false) {
 
-    const contenedor =
-        document.getElementById(
-            "listaProductos"
-        );
+    const tarjeta = document.createElement("article");
+    tarjeta.classList.add("tarjeta-producto", "tarjeta-producto-limpia");
+    tarjeta.tabIndex = 0;
+    tarjeta.setAttribute("role", "button");
+    tarjeta.setAttribute(
+        "aria-label",
+        `Ver detalle de ${producto.nombre}`
+    );
+    tarjeta.dataset.id = producto.idProducto;
 
+    if (producto.imagen) {
+        const imagen = document.createElement("img");
+        imagen.src = `http://localhost:5092${producto.imagen}`;
+        imagen.alt = producto.nombre;
+        imagen.className = "imagen-producto";
+        tarjeta.appendChild(imagen);
+    } else {
+        const sinImagen = document.createElement("div");
+        sinImagen.className = "sin-imagen";
+        sinImagen.textContent = "Sin imagen";
+        tarjeta.appendChild(sinImagen);
+    }
+
+    const nombre = document.createElement("h3");
+    nombre.textContent = producto.nombre;
+    tarjeta.appendChild(nombre);
+
+    const precio = document.createElement("p");
+    precio.className = "precio";
+    precio.textContent = `Q${Number(producto.precioVenta).toFixed(2)}`;
+    tarjeta.appendChild(precio);
+
+    const stock = document.createElement("p");
+    stock.className = "stock";
+    stock.textContent = `Stock: ${producto.stock}`;
+    tarjeta.appendChild(stock);
+
+    if (desactivado) {
+        const estado = document.createElement("span");
+        estado.className = "estado-producto estado-producto-inactivo";
+        estado.textContent = "Desactivado";
+        tarjeta.appendChild(estado);
+    }
+
+    return tarjeta;
+}
+
+function mostrarTarjetasProductos(lista, desactivados = false) {
+
+    const contenedor = document.getElementById("listaProductos");
     contenedor.innerHTML = "";
 
-
-    // --------------------------------------------------
-    // SIN PRODUCTOS
-    // --------------------------------------------------
-
     if (lista.length === 0) {
-
-        contenedor.innerHTML = `
-            <p>
-                No se encontraron productos.
-            </p>
-        `;
-
+        contenedor.textContent = desactivados
+            ? "No hay productos desactivados."
+            : "No se encontraron productos.";
         return;
     }
 
-
-    // --------------------------------------------------
-    // CREAR TARJETAS
-    // --------------------------------------------------
-
     lista.forEach(producto => {
-
-        const tarjeta =
-            document.createElement("div");
-
-        tarjeta.classList.add(
-            "tarjeta-producto"
-        );
-
-
-        // --------------------------------------------------
-        // IMAGEN
-        // --------------------------------------------------
-
-        const imagenHTML =
-            producto.imagen
-                ? `
-                    <img
-                        src="http://localhost:5092${producto.imagen}"
-                        alt="${producto.nombre}"
-                        class="imagen-producto"
-                    >
-                `
-                : "";
-
-
-        const ubicacion = [
-            producto.bodega,
-            producto.estanteria,
-            producto.fila
-        ].filter(Boolean).join(" | ");
-
-        tarjeta.innerHTML = `
-
-            ${imagenHTML}
-
-            <h3>
-                ${producto.nombre}
-            </h3>
-
-            <p>
-                <strong>Código:</strong>
-                ${producto.codigoBarras}
-            </p>
-
-            <p>
-                <strong>Categoría:</strong>
-                ${producto.categoria}
-            </p>
-
-            <p>
-                <strong>Precio compra:</strong>
-                Q${Number(
-                    producto.precioCompra
-                ).toFixed(2)}
-            </p>
-
-            <p class="precio">
-                Precio venta:
-                Q${Number(
-                    producto.precioVenta
-                ).toFixed(2)}
-            </p>
-
-            <p class="stock">
-                Stock:
-                ${producto.stock}
-            </p>
-
-            ${ubicacion ? `
-                <p class="ubicacion">
-                    <strong>Ubicacion:</strong>
-                    ${ubicacion}
-                </p>
-            ` : ""}
-
-            <p>
-                ${producto.descripcion ?? ""}
-            </p>
-
-            <div class="acciones-producto">
-
-                <button
-                    class="btn-editar"
-                    data-id="${producto.idProducto}"
-                >
-                     Editar Producto
-                </button>
-
-                <button
-                    class="btn-desactivar"
-                    data-id="${producto.idProducto}"
-                >
-                     Desactivar Producto
-                </button>
-
-            </div>
-
-
-
-
-
-
-
-        `;
-
         contenedor.appendChild(
-            tarjeta
+            crearTarjetaProducto(producto, desactivados)
         );
     });
 }
 
+function mostrarProductos(lista) {
+
+    mostrarTarjetasProductos(lista);
+}
+
+const modalDetalleProducto = document.getElementById("modalDetalleProducto");
+const contenidoDetalleProducto = document.getElementById("contenidoDetalleProducto");
+const btnCerrarDetalleProducto = document.getElementById("btnCerrarDetalleProducto");
+const btnEditarDesdeDetalle = document.getElementById("btnEditarDesdeDetalle");
+const btnDesactivarDesdeDetalle = document.getElementById("btnDesactivarDesdeDetalle");
+const btnReactivarDesdeDetalle = document.getElementById("btnReactivarDesdeDetalle");
+let productoDetalleActual = null;
+
+function agregarCampoDetalle(contenedor, etiqueta, valor) {
+    const campo = document.createElement("div");
+    campo.className = "campo-detalle-producto";
+
+    const titulo = document.createElement("dt");
+    titulo.textContent = etiqueta;
+
+    const contenido = document.createElement("dd");
+    contenido.textContent = valor || "No especificado";
+
+    campo.append(titulo, contenido);
+    contenedor.appendChild(campo);
+}
+
+async function abrirDetalleProducto(id) {
+    try {
+        const respuesta = await fetch(`${API_URL}/productos/${id}`);
+
+        if (!respuesta.ok) {
+            throw new Error("No se pudo obtener el detalle del producto.");
+        }
+
+        const producto = await respuesta.json();
+        productoDetalleActual = producto;
+        contenidoDetalleProducto.innerHTML = "";
+
+        const cabecera = document.createElement("div");
+        cabecera.className = "cabecera-detalle-producto";
+
+        if (producto.imagen) {
+            const imagen = document.createElement("img");
+            imagen.src = `http://localhost:5092${producto.imagen}`;
+            imagen.alt = producto.nombre;
+            imagen.className = "imagen-detalle-producto";
+            cabecera.appendChild(imagen);
+        } else {
+            const sinImagen = document.createElement("div");
+            sinImagen.className = "sin-imagen imagen-detalle-producto";
+            sinImagen.textContent = "Sin imagen";
+            cabecera.appendChild(sinImagen);
+        }
+
+        const titulo = document.createElement("div");
+        const nombre = document.createElement("h3");
+        nombre.textContent = producto.nombre;
+        const estado = document.createElement("span");
+        estado.className = producto.estado
+            ? "estado-producto"
+            : "estado-producto estado-producto-inactivo";
+        estado.textContent = producto.estado ? "Activo" : "Desactivado";
+        titulo.append(nombre, estado);
+        cabecera.appendChild(titulo);
+        contenidoDetalleProducto.appendChild(cabecera);
+
+        const campos = document.createElement("dl");
+        campos.className = "campos-detalle-producto";
+        agregarCampoDetalle(campos, "Código de barras", producto.codigoBarras);
+        agregarCampoDetalle(campos, "Categoría", producto.categoria);
+        agregarCampoDetalle(
+            campos,
+            "Precio de compra",
+            `Q${Number(producto.precioCompra).toFixed(2)}`
+        );
+        agregarCampoDetalle(
+            campos,
+            "Precio de venta",
+            `Q${Number(producto.precioVenta).toFixed(2)}`
+        );
+        agregarCampoDetalle(campos, "Existencias", `${producto.stock} unidades`);
+        agregarCampoDetalle(
+            campos,
+            "Ubicación",
+            [producto.bodega, producto.estanteria, producto.fila]
+                .filter(Boolean)
+                .join(" | ")
+        );
+        agregarCampoDetalle(campos, "Descripción", producto.descripcion);
+        const fechaRegistro = producto.fechaRegistro
+            ? new Date(producto.fechaRegistro).toLocaleDateString()
+            : "";
+        agregarCampoDetalle(campos, "Fecha de registro", fechaRegistro);
+        contenidoDetalleProducto.appendChild(campos);
+
+        btnEditarDesdeDetalle.hidden = !producto.estado;
+        btnDesactivarDesdeDetalle.hidden = !producto.estado;
+        btnReactivarDesdeDetalle.hidden = producto.estado;
+        modalDetalleProducto.classList.add("activo");
+    } catch (error) {
+        console.error("Error cargando el detalle del producto:", error);
+        alert(error.message || "No se pudo cargar el detalle del producto.");
+    }
+}
+
+function cerrarDetalleProducto() {
+    modalDetalleProducto.classList.remove("activo");
+    productoDetalleActual = null;
+}
+
+btnCerrarDetalleProducto.addEventListener("click", cerrarDetalleProducto);
+modalDetalleProducto.addEventListener("click", evento => {
+    if (evento.target === modalDetalleProducto) {
+        cerrarDetalleProducto();
+    }
+});
+
+btnEditarDesdeDetalle.addEventListener("click", () => {
+    if (!productoDetalleActual) {
+        return;
+    }
+
+    const id = productoDetalleActual.idProducto;
+    cerrarDetalleProducto();
+    abrirModalEditar(id);
+});
+
+btnDesactivarDesdeDetalle.addEventListener("click", () => {
+    if (!productoDetalleActual) {
+        return;
+    }
+
+    const id = productoDetalleActual.idProducto;
+    cerrarDetalleProducto();
+    desactivarProducto(id);
+});
+
+btnReactivarDesdeDetalle.addEventListener("click", () => {
+    if (!productoDetalleActual) {
+        return;
+    }
+
+    const id = productoDetalleActual.idProducto;
+    cerrarDetalleProducto();
+    reactivarProducto(id);
+});
 
 // ======================================================
 // APLICAR BÚSQUEDA Y FILTROS
@@ -690,8 +763,35 @@ listaProductos.addEventListener(
                 botonDesactivar.dataset.id;
 
             desactivarProducto(id);
+            return;
         }
 
+        const tarjeta =
+            evento.target.closest(
+                ".tarjeta-producto"
+            );
+
+        if (tarjeta) {
+            abrirDetalleProducto(tarjeta.dataset.id);
+        }
+
+    }
+);
+
+listaProductos.addEventListener(
+    "keydown",
+    function (evento) {
+        if (evento.key !== "Enter" && evento.key !== " ") {
+            return;
+        }
+
+        const tarjeta = evento.target.closest(".tarjeta-producto");
+        if (!tarjeta) {
+            return;
+        }
+
+        evento.preventDefault();
+        abrirDetalleProducto(tarjeta.dataset.id);
     }
 );
 
@@ -1641,125 +1741,7 @@ async function cargarProductosDesactivados() {
 
 function mostrarProductosDesactivados(lista) {
 
-    const contenedor =
-        document.getElementById(
-            "listaProductos"
-        );
-
-    contenedor.innerHTML = "";
-
-
-    if (lista.length === 0) {
-
-        contenedor.innerHTML = `
-            <p>
-                No hay productos desactivados.
-            </p>
-        `;
-
-        return;
-    }
-
-
-    lista.forEach(producto => {
-
-        const tarjeta =
-            document.createElement("div");
-
-        tarjeta.classList.add(
-            "tarjeta-producto"
-        );
-
-
-        let imagenHTML = "";
-
-
-        if (producto.imagen) {
-
-            imagenHTML = `
-                <img
-                    src="http://localhost:5092${producto.imagen}"
-                    alt="${producto.nombre}"
-                    class="imagen-producto"
-                >
-            `;
-
-        } else {
-
-            imagenHTML = `
-                <div class="sin-imagen">
-                    Sin imagen
-                </div>
-            `;
-        }
-
-
-        const ubicacion = [
-            producto.bodega,
-            producto.estanteria,
-            producto.fila
-        ].filter(Boolean).join(" | ");
-
-        tarjeta.innerHTML = `
-
-            ${imagenHTML}
-
-            <h3>
-                ${producto.nombre}
-            </h3>
-
-            <p>
-                <strong>Código:</strong>
-                ${producto.codigoBarras}
-            </p>
-
-            <p>
-                <strong>Categoría:</strong>
-                ${producto.categoria}
-            </p>
-
-            <p>
-                <strong>Precio venta:</strong>
-                Q${Number(
-                    producto.precioVenta
-                ).toFixed(2)}
-            </p>
-
-            <p>
-                <strong>Stock:</strong>
-                ${producto.stock}
-            </p>
-
-            ${ubicacion ? `
-                <p class="ubicacion">
-                    <strong>Ubicacion:</strong>
-                    ${ubicacion}
-                </p>
-            ` : ""}
-
-            <p>
-                ${producto.descripcion ?? ""}
-            </p>
-
-            <div class="acciones-producto">
-
-                <button
-                    class="btn-reactivar"
-                    data-id="${producto.idProducto}"
-                >
-                    🔄 Reactivar
-                </button>
-
-            </div>
-
-        `;
-
-
-        contenedor.appendChild(
-            tarjeta
-        );
-
-    });
+    mostrarTarjetasProductos(lista, true);
 }
 
 // ======================================================
