@@ -15,12 +15,13 @@ para la logica y comportamiento de la aplicacion css para el estilo del programa
 - Historial de ventas con tickets no facturables e impresion
 - Ventas al credito con modulo de pendientes de pago
 - Modulo Inventario
+- Movimientos e ingresos de inventario
+- Dashboard mas limpio e informativo
+
 
 "Que nos hace falta"
 
 
-- Movimientos e ingresos de inventario
-- Dashboard mas limpio e informativo
 - Alertas sobre Stock minimo
 - Modulo de clientes
 - Usuarios, Contraseñas y Permisos
