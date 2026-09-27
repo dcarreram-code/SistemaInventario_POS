@@ -2876,3 +2876,146 @@ input[type="file"] {
         padding: 14px;
     }
 }
+
+.modal-ticket {
+    z-index: 130;
+}
+
+.contenido-modal-ticket {
+    max-width: 540px;
+}
+
+.aviso-no-facturable {
+    margin: 0 0 1rem;
+    padding: 0.55rem;
+    border: 1px dashed #6b7280;
+    color: #4b5563;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+.informacion-ticket {
+    display: grid;
+    gap: 0.55rem;
+    margin: 0 0 1rem;
+}
+
+.informacion-ticket > div {
+    display: grid;
+    grid-template-columns: minmax(110px, 0.8fr) 1.2fr;
+    gap: 0.75rem;
+}
+
+.informacion-ticket dt {
+    color: #6b7280;
+    font-weight: 600;
+}
+
+.informacion-ticket dd {
+    margin: 0;
+    overflow-wrap: anywhere;
+    text-align: right;
+}
+
+.tabla-ticket {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.82rem;
+}
+
+.tabla-ticket th,
+.tabla-ticket td {
+    padding: 0.5rem 0.3rem;
+    border-bottom: 1px solid #e5e7eb;
+    text-align: right;
+    vertical-align: top;
+}
+
+.tabla-ticket th:first-child,
+.tabla-ticket td:first-child {
+    text-align: left;
+    overflow-wrap: anywhere;
+}
+
+.tabla-ticket th {
+    color: #4b5563;
+    font-size: 0.72rem;
+}
+
+.estado-ticket-anulado {
+    margin: 0 0 0.8rem;
+    color: #dc2626;
+    font-weight: 800;
+    text-align: center;
+}
+
+.total-ticket {
+    display: flex;
+    justify-content: space-between;
+    margin: 1rem 0 0;
+    padding-top: 0.75rem;
+    border-top: 2px solid #111827;
+    font-size: 1.1rem;
+    font-weight: 800;
+}
+
+.acciones-ticket {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+}
+
+@media print {
+    @page {
+        margin: 4mm;
+    }
+
+    body.imprimiendo-ticket * {
+        visibility: hidden !important;
+    }
+
+    body.imprimiendo-ticket #modalTicket,
+    body.imprimiendo-ticket #modalTicket * {
+        visibility: visible !important;
+    }
+
+    body.imprimiendo-ticket #modalTicket {
+        position: absolute;
+        inset: 0;
+        display: block !important;
+        padding: 0;
+        background: #ffffff;
+        backdrop-filter: none;
+    }
+
+    body.imprimiendo-ticket #modalTicket .contenido-modal-ticket {
+        width: 72mm;
+        max-width: none;
+        max-height: none;
+        overflow: visible;
+        padding: 0;
+        border: 0;
+        border-radius: 0;
+        box-shadow: none;
+    }
+
+    body.imprimiendo-ticket #modalTicket .encabezado-ticket {
+        margin-bottom: 0.75rem;
+    }
+
+    body.imprimiendo-ticket #modalTicket .encabezado-ticket h2 {
+        font-size: 1rem;
+    }
+
+    body.imprimiendo-ticket #modalTicket .encabezado-ticket button,
+    body.imprimiendo-ticket #modalTicket .acciones-ticket {
+        display: none !important;
+    }
+
+    body.imprimiendo-ticket .tabla-ticket {
+        font-size: 0.7rem;
+    }
+}

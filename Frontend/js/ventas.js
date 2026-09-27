@@ -182,6 +182,7 @@ async function abrirVenta(id) {
         mostrandoHistorial && ventaActual.estado === "Completada";
 
     const accionesVenta = document.querySelector(".acciones-venta");
+    const btnVerTicket = document.getElementById("btnVerTicket");
     const btnAnularVenta = document.getElementById("btnAnularVenta");
     const btnCancelarVenta = document.getElementById("btnCancelarVenta");
     const btnConcretarVenta = document.getElementById("btnConcretarVenta");
@@ -190,7 +191,7 @@ async function abrirVenta(id) {
         esVentaAbierta ? "grid" : "none";
 
     accionesVenta.style.display =
-        (esVentaAbierta || esVentaCompletadaEnHistorial)
+        (esVentaAbierta || mostrandoHistorial)
             ? "flex"
             : "none";
 
@@ -202,6 +203,8 @@ async function abrirVenta(id) {
 
     btnAnularVenta.style.display =
         esVentaCompletadaEnHistorial ? "inline-flex" : "none";
+    btnVerTicket.style.display =
+        mostrandoHistorial ? "inline-flex" : "none";
 
     document.getElementById("tituloModalVentas").textContent =
         mostrandoHistorial ? "Historial de ventas" : "Ventas abiertas";
@@ -230,6 +233,112 @@ function mostrarDetallesVenta() {
     });
     document.getElementById("totalVenta").textContent = `Q${total.toFixed(2)}`;
 }
+
+function mostrarTicketVenta(venta) {
+    const contenidoTicket = document.getElementById("contenidoTicket");
+    const fechaVenta = venta.fechaCierre || venta.fechaApertura;
+    const fechaFormateada = fechaVenta
+        ? new Date(fechaVenta).toLocaleString("es-GT")
+        : "Sin fecha";
+    const moneda = new Intl.NumberFormat("es-GT", {
+        style: "currency",
+        currency: "GTQ"
+    });
+    const detalles = venta.detalles || [];
+
+    contenidoTicket.replaceChildren();
+
+    const aviso = document.createElement("p");
+    aviso.className = "aviso-no-facturable";
+    aviso.textContent = "Comprobante no facturable";
+    contenidoTicket.appendChild(aviso);
+
+    const informacion = document.createElement("dl");
+    informacion.className = "informacion-ticket";
+    [
+        ["Número de venta", `#${venta.idVenta}`],
+        ["Fecha y hora", fechaFormateada],
+        ["Vehículo", venta.vehiculo],
+        ["Placa", venta.placa || "Sin placa"]
+    ].forEach(([etiqueta, valor]) => {
+        const grupo = document.createElement("div");
+        const termino = document.createElement("dt");
+        termino.textContent = etiqueta;
+        const descripcion = document.createElement("dd");
+        descripcion.textContent = valor;
+        grupo.append(termino, descripcion);
+        informacion.appendChild(grupo);
+    });
+    contenidoTicket.appendChild(informacion);
+
+    if (venta.estado === "Anulada") {
+        const estado = document.createElement("p");
+        estado.className = "estado-ticket-anulado";
+        estado.textContent = "VENTA ANULADA";
+        contenidoTicket.appendChild(estado);
+    }
+
+    const tabla = document.createElement("table");
+    tabla.className = "tabla-ticket";
+    tabla.innerHTML = `
+        <thead>
+            <tr>
+                <th>Producto</th>
+                <th>Cant.</th>
+                <th>Precio unit.</th>
+                <th>Subtotal</th>
+            </tr>
+        </thead>
+        <tbody></tbody>`;
+
+    const cuerpoTabla = tabla.querySelector("tbody");
+    detalles.forEach(detalle => {
+        const fila = document.createElement("tr");
+        [
+            detalle.nombreProducto,
+            String(detalle.cantidad),
+            moneda.format(Number(detalle.precioUnitario)),
+            moneda.format(Number(detalle.subtotal))
+        ].forEach(valor => {
+            const celda = document.createElement("td");
+            celda.textContent = valor;
+            fila.appendChild(celda);
+        });
+        cuerpoTabla.appendChild(fila);
+    });
+    contenidoTicket.appendChild(tabla);
+
+    const total = document.createElement("p");
+    total.className = "total-ticket";
+    const etiquetaTotal = document.createElement("span");
+    etiquetaTotal.textContent = "TOTAL";
+    const valorTotal = document.createElement("strong");
+    valorTotal.textContent = moneda.format(Number(venta.total));
+    total.append(etiquetaTotal, valorTotal);
+    contenidoTicket.appendChild(total);
+
+    document.getElementById("modalTicket").classList.add("activo");
+}
+
+document.getElementById("btnVerTicket").addEventListener("click", () => {
+    if (ventaActual && mostrandoHistorial) {
+        mostrarTicketVenta(ventaActual);
+    }
+});
+
+function cerrarTicket() {
+    document.getElementById("modalTicket").classList.remove("activo");
+}
+
+document.getElementById("btnCerrarTicket").addEventListener("click", cerrarTicket);
+document.getElementById("btnCerrarTicketAccion").addEventListener("click", cerrarTicket);
+window.addEventListener("afterprint", () => {
+    document.body.classList.remove("imprimiendo-ticket");
+});
+document.getElementById("btnImprimirTicket").addEventListener("click", () => {
+    document.body.classList.add("imprimiendo-ticket");
+    window.print();
+});
 
 document.getElementById("btnVentas").addEventListener("click", async () => {
     mostrandoHistorial = false;
