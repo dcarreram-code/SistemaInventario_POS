@@ -3,6 +3,7 @@ using InventarioAPI.DTOs;
 using InventarioAPI.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Data;
 
 namespace InventarioAPI.Controllers
 {
@@ -164,6 +165,8 @@ public async Task<IActionResult> BuscarProductos(
             FechaRegistro = p.FechaRegistro,
             Estado = p.Estado
         })
+        .OrderBy(p => p.Nombre)
+        .Take(10)
         .ToListAsync();
 
     // ------------------------------------------------------
@@ -227,6 +230,7 @@ public async Task<IActionResult> ActualizarProducto(
     // GUARDAR DATOS DEL PRODUCTO
     // ==================================================
 
+    var stockAnterior = producto.Stock;
     producto.CodigoBarras =
         productoDTO.CodigoBarras;
 
@@ -259,6 +263,21 @@ public async Task<IActionResult> ActualizarProducto(
 
     producto.Estado =
         productoDTO.Estado;
+
+    if (stockAnterior != productoDTO.Stock)
+    {
+        producto.Stock = productoDTO.Stock;
+        _context.MovimientosInventario.Add(new MovimientoInventario
+        {
+            IdProducto = producto.IdProducto,
+            Tipo = "Ajuste",
+            Cantidad = producto.Stock - stockAnterior,
+            StockAnterior = stockAnterior,
+            StockPosterior = producto.Stock,
+            Fecha = DateTime.Now,
+            Descripcion = "Ajuste de stock desde la edición del producto"
+        });
+    }
 
 
     // ==================================================
@@ -463,9 +482,28 @@ public async Task<IActionResult> ActualizarProducto(
                 Estado = true
             };
 
-            _context.Productos.Add(producto);
+            await using (var transaccion = await _context.Database.BeginTransactionAsync(IsolationLevel.Serializable))
+            {
+                _context.Productos.Add(producto);
+                await _context.SaveChangesAsync();
 
-            await _context.SaveChangesAsync();
+                if (producto.Stock > 0)
+                {
+                    _context.MovimientosInventario.Add(new MovimientoInventario
+                    {
+                        IdProducto = producto.IdProducto,
+                        Tipo = "Entrada",
+                        Cantidad = producto.Stock,
+                        StockAnterior = 0,
+                        StockPosterior = producto.Stock,
+                        Fecha = DateTime.Now,
+                        Descripcion = "Stock inicial al crear el producto"
+                    });
+                    await _context.SaveChangesAsync();
+                }
+
+                await transaccion.CommitAsync();
+            }
 
             return CreatedAtAction(
                 nameof(ObtenerProductos),

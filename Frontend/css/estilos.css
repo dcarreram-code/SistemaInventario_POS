@@ -424,6 +424,35 @@ main {
 #modalEditarCategoria .modal-contenido { max-width: 480px; }
 #modalCategorias .modal-acciones { margin-bottom: 1rem; margin-top: 0; }
 
+.modal-movimientos { max-width: 1200px; }
+.busqueda-producto-movimiento { position: relative; }
+.busqueda-producto-movimiento > input[type="search"] { width: 100%; min-height: 42px; padding: 0.65rem 0.85rem; border: 1px solid var(--border-color); border-radius: var(--radius-sm); font: inherit; }
+.busqueda-producto-movimiento > input[type="search"]:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.12); }
+.sugerencias-producto-movimiento { position: absolute; top: calc(100% + 3px); left: 0; right: 0; z-index: 120; max-height: 240px; overflow-y: auto; background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: var(--radius-sm); box-shadow: var(--shadow-md); }
+.sugerencias-producto-movimiento:empty { display: none; }
+.sugerencias-producto-movimiento button { display: flex; flex-direction: column; align-items: flex-start; gap: 0.2rem; width: 100%; padding: 0.65rem 0.8rem; border: 0; border-bottom: 1px solid var(--border-color); background: transparent; text-align: left; cursor: pointer; }
+.sugerencias-producto-movimiento button:hover { background: var(--bg-main); }
+.sugerencias-producto-movimiento button span,
+.sin-sugerencias-producto { color: var(--text-muted); font-size: 0.82rem; }
+.sin-sugerencias-producto { margin: 0; padding: 0.7rem 0.8rem; }
+.form-movimiento,
+.historial-movimientos { border-bottom: 1px solid var(--border-color); padding-bottom: 1.25rem; margin-bottom: 1.25rem; }
+.form-movimiento h3,
+.historial-movimientos h3 { margin-bottom: 1rem; }
+.form-movimiento .campo { flex: 1; }
+.filtros-movimientos { display: flex; flex-wrap: wrap; align-items: end; gap: 0.75rem; margin: 1rem 0; }
+.filtros-movimientos label { display: flex; flex-direction: column; gap: 0.35rem; font-size: 0.85rem; font-weight: 500; }
+.filtros-movimientos input,
+.filtros-movimientos select { min-height: 40px; padding: 0.5rem; border: 1px solid var(--border-color); border-radius: var(--radius-sm); }
+.tabla-movimientos-contenedor { overflow-x: auto; }
+.tabla-movimientos { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+.tabla-movimientos th,
+.tabla-movimientos td { padding: 0.7rem; border-bottom: 1px solid var(--border-color); text-align: left; white-space: nowrap; }
+.tabla-movimientos th { background: var(--bg-main); font-weight: 600; }
+.tabla-movimientos td:last-child { white-space: normal; min-width: 180px; }
+.cantidad-positiva { color: var(--secondary); font-weight: 600; }
+.cantidad-negativa { color: var(--primary); font-weight: 600; }
+
 /* ==========================================================
    CATEGORÍAS
    ========================================================== */
