@@ -12,12 +12,13 @@ para la logica y comportamiento de la aplicacion css para el estilo del programa
 - Productos Desactivados
 - Categorias Desactivadas
 - Modulo Ventas
+- Historial de ventas con tickets no facturables e impresion
 - Modulo Inventario
 
 "Que nos hace falta"
 
+
 - Movimientos e ingresos de inventario
-- Tickets por ventas
 - Dashboard mas limpio e informativo
 - Alertas sobre Stock minimo
 - Modulo de clientes
