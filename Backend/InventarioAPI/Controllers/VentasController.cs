@@ -25,6 +25,23 @@ namespace InventarioAPI.Controllers
                 CantidadProductos = v.Detalles.Sum(d => (int?)d.Cantidad) ?? 0
             }).ToListAsync());
 
+        [HttpGet("pendientes-pago")]
+        public async Task<IActionResult> ObtenerPendientesPago() => Ok(await _context.Ventas
+            .Where(v => v.Estado == "PendientePago")
+            .OrderByDescending(v => v.FechaCierre)
+            .Select(v => new
+            {
+                v.IdVenta,
+                v.NombreCliente,
+                v.TelefonoCliente,
+                v.Vehiculo,
+                v.Placa,
+                v.FechaCierre,
+                v.Total,
+                CantidadProductos = v.Detalles.Sum(d => (int?)d.Cantidad) ?? 0
+            })
+            .ToListAsync());
+
         [HttpGet("historial")]
         public async Task<IActionResult> ObtenerHistorial(
             [FromQuery] string? vehiculo,
@@ -152,6 +169,8 @@ namespace InventarioAPI.Controllers
                     v.IdVenta,
                     v.Vehiculo,
                     v.Placa,
+                    v.NombreCliente,
+                    v.TelefonoCliente,
                     v.Observaciones,
                     v.Estado,
                     v.FechaApertura,
@@ -265,30 +284,60 @@ namespace InventarioAPI.Controllers
             var venta = await _context.Ventas.Include(v => v.Detalles)
                 .FirstOrDefaultAsync(v => v.IdVenta == id && v.Estado == "Abierta");
             if (venta == null) return BadRequest(new { mensaje = "La venta no esta abierta." });
-            if (venta.Detalles.Count == 0) return BadRequest(new { mensaje = "Agregue al menos un producto." });
+            var errorStock = await DescontarStockVenta(venta, $"Venta #{venta.IdVenta}");
+            if (errorStock != null) return BadRequest(new { mensaje = errorStock });
 
-            var ids = venta.Detalles.Select(d => d.IdProducto).ToList();
-            var productos = await _context.Productos.Where(p => ids.Contains(p.IdProducto)).ToDictionaryAsync(p => p.IdProducto);
-            foreach (var detalle in venta.Detalles) {
-                if (!productos.TryGetValue(detalle.IdProducto, out var producto) || !producto.Estado || producto.Stock < detalle.Cantidad)
-                    return BadRequest(new { mensaje = $"Stock insuficiente para {detalle.NombreProducto}." });
-            }
-            foreach (var detalle in venta.Detalles) {
-                var producto = productos[detalle.IdProducto];
-                var anterior = producto.Stock;
-                producto.Stock -= detalle.Cantidad;
-                _context.MovimientosInventario.Add(new MovimientoInventario {
-                    IdProducto = producto.IdProducto, IdVenta = venta.IdVenta, Tipo = "Venta",
-                    Cantidad = -detalle.Cantidad, StockAnterior = anterior, StockPosterior = producto.Stock,
-                    Fecha = DateTime.Now, Descripcion = $"Venta #{venta.IdVenta}"
-                });
-            }
             venta.Total = venta.Detalles.Sum(d => d.Subtotal);
             venta.Estado = "Completada";
             venta.FechaCierre = DateTime.Now;
             await _context.SaveChangesAsync();
             await transaccion.CommitAsync();
             return Ok(new { mensaje = "Venta concretada correctamente.", venta.IdVenta, venta.Total });
+        }
+
+        [HttpPost("{id}/pendiente-pago")]
+        public async Task<IActionResult> GuardarPendientePago(int id, CrearVentaPendientePagoDTO dto)
+        {
+            var nombreCliente = dto.NombreCliente.Trim();
+            var telefonoCliente = dto.TelefonoCliente.Trim();
+            var vehiculo = dto.Vehiculo.Trim();
+            var placa = dto.Placa.Trim();
+            if (nombreCliente.Split(' ', StringSplitOptions.RemoveEmptyEntries).Length < 2)
+                return BadRequest(new { mensaje = "Ingrese el nombre completo del cliente." });
+            if (telefonoCliente.Count(char.IsDigit) < 7 ||
+                telefonoCliente.Any(caracter =>
+                    !char.IsDigit(caracter) &&
+                    caracter != '+' &&
+                    caracter != ' ' &&
+                    caracter != '-' &&
+                    caracter != '(' &&
+                    caracter != ')'))
+                return BadRequest(new { mensaje = "Ingrese un número de teléfono válido." });
+
+            await using var transaccion = await _context.Database.BeginTransactionAsync(IsolationLevel.Serializable);
+            var venta = await _context.Ventas.Include(v => v.Detalles)
+                .FirstOrDefaultAsync(v => v.IdVenta == id && v.Estado == "Abierta");
+            if (venta == null) return BadRequest(new { mensaje = "La venta no esta abierta." });
+
+            var errorStock = await DescontarStockVenta(venta, $"Venta al crédito #{venta.IdVenta}");
+            if (errorStock != null) return BadRequest(new { mensaje = errorStock });
+
+            venta.NombreCliente = nombreCliente;
+            venta.TelefonoCliente = telefonoCliente;
+            venta.Vehiculo = vehiculo;
+            venta.Placa = placa;
+            venta.Total = venta.Detalles.Sum(d => d.Subtotal);
+            venta.Estado = "PendientePago";
+            venta.FechaCierre = DateTime.Now;
+
+            await _context.SaveChangesAsync();
+            await transaccion.CommitAsync();
+            return Ok(new
+            {
+                mensaje = "La venta quedó registrada en pendientes de pago.",
+                venta.IdVenta,
+                venta.Total
+            });
         }
 
         [HttpPost("{id}/cancelar")]
@@ -328,6 +377,45 @@ namespace InventarioAPI.Controllers
             await _context.SaveChangesAsync();
             await transaccion.CommitAsync();
             return Ok(new { mensaje = "Venta anulada y stock devuelto correctamente." });
+        }
+
+        private async Task<string?> DescontarStockVenta(Venta venta, string descripcion)
+        {
+            if (venta.Detalles.Count == 0)
+                return "Agregue al menos un producto.";
+
+            var ids = venta.Detalles.Select(d => d.IdProducto).ToList();
+            var productos = await _context.Productos
+                .Where(p => ids.Contains(p.IdProducto))
+                .ToDictionaryAsync(p => p.IdProducto);
+
+            foreach (var detalle in venta.Detalles)
+            {
+                if (!productos.TryGetValue(detalle.IdProducto, out var producto) ||
+                    !producto.Estado ||
+                    producto.Stock < detalle.Cantidad)
+                    return $"Stock insuficiente para {detalle.NombreProducto}.";
+            }
+
+            foreach (var detalle in venta.Detalles)
+            {
+                var producto = productos[detalle.IdProducto];
+                var anterior = producto.Stock;
+                producto.Stock -= detalle.Cantidad;
+                _context.MovimientosInventario.Add(new MovimientoInventario
+                {
+                    IdProducto = producto.IdProducto,
+                    IdVenta = venta.IdVenta,
+                    Tipo = "Venta",
+                    Cantidad = -detalle.Cantidad,
+                    StockAnterior = anterior,
+                    StockPosterior = producto.Stock,
+                    Fecha = DateTime.Now,
+                    Descripcion = descripcion
+                });
+            }
+
+            return null;
         }
     }
 }

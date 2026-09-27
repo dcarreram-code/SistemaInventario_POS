@@ -5,6 +5,8 @@ namespace InventarioAPI.Models
         public int IdVenta { get; set; }
         public string Vehiculo { get; set; } = string.Empty;
         public string? Placa { get; set; }
+        public string? NombreCliente { get; set; }
+        public string? TelefonoCliente { get; set; }
         public string? Observaciones { get; set; }
         public string Estado { get; set; } = "Abierta";
         public DateTime FechaApertura { get; set; }

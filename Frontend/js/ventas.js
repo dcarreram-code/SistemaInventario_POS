@@ -10,6 +10,7 @@ const ventaObservaciones = document.getElementById("ventaObservaciones");
 let ventaActual = null;
 let temporizadorBusquedaVenta = null;
 let mostrandoHistorial = false;
+let mostrandoPendientesPago = false;
 
 async function respuestaVenta(url, opciones = {}) {
     const respuesta = await fetch(`${API_URL}${url}`, opciones);
@@ -33,6 +34,45 @@ async function cargarVentasAbiertas() {
         boton.className = "tarjeta-venta";
         boton.dataset.id = venta.idVenta;
         boton.innerHTML = `<strong>${venta.vehiculo}</strong><span>${venta.placa || "Sin placa"}</span><small>${venta.cantidadProductos} producto(s) · Q${Number(venta.total).toFixed(2)}</small>`;
+        listaVentasAbiertas.appendChild(boton);
+    });
+}
+
+async function cargarVentasPendientesPago() {
+    const ventas = await respuestaVenta("/ventas/pendientes-pago");
+    listaVentasAbiertas.replaceChildren();
+
+    if (!ventas.length) {
+        listaVentasAbiertas.innerHTML = `
+            <div class="historial-vacio">
+                <strong>No hay ventas pendientes de pago</strong>
+            </div>`;
+        return;
+    }
+
+    ventas.forEach(venta => {
+        const boton = document.createElement("button");
+        boton.type = "button";
+        boton.className = "tarjeta-venta tarjeta-historial tarjeta-pendiente-pago";
+        boton.dataset.id = venta.idVenta;
+
+        const informacion = document.createElement("div");
+        informacion.className = "historial-venta-info";
+
+        const cliente = document.createElement("strong");
+        cliente.textContent = `#${venta.idVenta} · ${venta.nombreCliente}`;
+        const vehiculo = document.createElement("span");
+        vehiculo.textContent = `${venta.vehiculo} · ${venta.placa}`;
+        const telefono = document.createElement("span");
+        telefono.textContent = venta.telefonoCliente;
+        const fecha = document.createElement("small");
+        fecha.textContent = `${new Date(venta.fechaCierre).toLocaleString("es-GT")} · ${venta.cantidadProductos} producto(s)`;
+
+        informacion.append(cliente, vehiculo, telefono, fecha);
+        const total = document.createElement("strong");
+        total.className = "historial-venta-total";
+        total.textContent = `Q${Number(venta.total).toFixed(2)}`;
+        boton.append(informacion, total);
         listaVentasAbiertas.appendChild(boton);
     });
 }
@@ -178,6 +218,7 @@ async function abrirVenta(id) {
         `${ventaActual.vehiculo}${ventaActual.placa ? ` · ${ventaActual.placa}` : ""}`;
 
     const esVentaAbierta = ventaActual.estado === "Abierta";
+    const esVentaPendientePago = ventaActual.estado === "PendientePago";
     const esVentaCompletadaEnHistorial =
         mostrandoHistorial && ventaActual.estado === "Completada";
 
@@ -186,12 +227,14 @@ async function abrirVenta(id) {
     const btnAnularVenta = document.getElementById("btnAnularVenta");
     const btnCancelarVenta = document.getElementById("btnCancelarVenta");
     const btnConcretarVenta = document.getElementById("btnConcretarVenta");
+    const btnVentaPendientePago = document.getElementById("btnVentaPendientePago");
+    const clienteVenta = document.getElementById("clienteVenta");
 
     document.querySelector(".agregar-producto-venta").style.display =
         esVentaAbierta ? "grid" : "none";
 
     accionesVenta.style.display =
-        (esVentaAbierta || mostrandoHistorial)
+        (esVentaAbierta || mostrandoHistorial || mostrandoPendientesPago)
             ? "flex"
             : "none";
 
@@ -200,23 +243,35 @@ async function abrirVenta(id) {
 
     btnConcretarVenta.style.display =
         esVentaAbierta ? "inline-flex" : "none";
+    btnVentaPendientePago.style.display =
+        esVentaAbierta ? "inline-flex" : "none";
 
     btnAnularVenta.style.display =
         esVentaCompletadaEnHistorial ? "inline-flex" : "none";
     btnVerTicket.style.display =
-        mostrandoHistorial ? "inline-flex" : "none";
+        (mostrandoHistorial || mostrandoPendientesPago) ? "inline-flex" : "none";
+    clienteVenta.style.display = esVentaPendientePago ? "block" : "none";
+    clienteVenta.textContent = esVentaPendientePago
+        ? `Cliente: ${ventaActual.nombreCliente} · Teléfono: ${ventaActual.telefonoCliente}`
+        : "";
 
     document.getElementById("tituloModalVentas").textContent =
-        mostrandoHistorial ? "Historial de ventas" : "Ventas abiertas";
+        mostrandoHistorial
+            ? "Historial de ventas"
+            : mostrandoPendientesPago
+                ? "Pendientes de pago"
+                : "Ventas abiertas";
 
     mostrarDetallesVenta();
 
-    if (mostrandoHistorial) {
+    if (mostrandoHistorial || mostrandoPendientesPago) {
         modalVentas.classList.add("modo-historial");
     } else {
         modalVentas.classList.remove("modo-historial");
-        await cargarVentasAbiertas();
     }
+
+    if (mostrandoPendientesPago) await cargarVentasPendientesPago();
+    else if (!mostrandoHistorial) await cargarVentasAbiertas();
 }
 
 function mostrarDetallesVenta() {
@@ -259,7 +314,11 @@ function mostrarTicketVenta(venta) {
         ["Número de venta", `#${venta.idVenta}`],
         ["Fecha y hora", fechaFormateada],
         ["Vehículo", venta.vehiculo],
-        ["Placa", venta.placa || "Sin placa"]
+        ["Placa", venta.placa || "Sin placa"],
+        ...(venta.nombreCliente ? [
+            ["Cliente", venta.nombreCliente],
+            ["Teléfono", venta.telefonoCliente || "Sin teléfono"]
+        ] : [])
     ].forEach(([etiqueta, valor]) => {
         const grupo = document.createElement("div");
         const termino = document.createElement("dt");
@@ -275,6 +334,12 @@ function mostrarTicketVenta(venta) {
         const estado = document.createElement("p");
         estado.className = "estado-ticket-anulado";
         estado.textContent = "VENTA ANULADA";
+        contenidoTicket.appendChild(estado);
+    }
+    if (venta.estado === "PendientePago") {
+        const estado = document.createElement("p");
+        estado.className = "estado-ticket-pendiente";
+        estado.textContent = "PENDIENTE DE PAGO";
         contenidoTicket.appendChild(estado);
     }
 
@@ -321,7 +386,7 @@ function mostrarTicketVenta(venta) {
 }
 
 document.getElementById("btnVerTicket").addEventListener("click", () => {
-    if (ventaActual && mostrandoHistorial) {
+    if (ventaActual && (mostrandoHistorial || mostrandoPendientesPago)) {
         mostrarTicketVenta(ventaActual);
     }
 });
@@ -342,6 +407,7 @@ document.getElementById("btnImprimirTicket").addEventListener("click", () => {
 
 document.getElementById("btnVentas").addEventListener("click", async () => {
     mostrandoHistorial = false;
+    mostrandoPendientesPago = false;
     ventaActual = null;
 
     modalVentas.classList.remove("modo-historial");
@@ -367,6 +433,7 @@ document.getElementById("btnVentas").addEventListener("click", async () => {
 
 document.getElementById("btnHistorialVentas").addEventListener("click", async () => {
     mostrandoHistorial = true;
+    mostrandoPendientesPago = false;
     ventaActual = null;
 
     modalVentas.classList.add("modo-historial");
@@ -390,9 +457,29 @@ document.getElementById("btnHistorialVentas").addEventListener("click", async ()
     }
 });
 
+document.getElementById("btnVentasPendientesPago").addEventListener("click", async () => {
+    mostrandoHistorial = false;
+    mostrandoPendientesPago = true;
+    ventaActual = null;
+    modalVentas.classList.add("modo-historial");
+    contenidoVenta.style.display = "none";
+    formNuevaVenta.style.display = "none";
+    document.getElementById("tituloModalVentas").textContent = "Pendientes de pago";
+    document.getElementById("btnNuevaVenta").style.display = "none";
+    filtrosHistorialVentas.style.display = "none";
+    modalVentas.classList.add("activo");
+
+    try {
+        await cargarVentasPendientesPago();
+    } catch (error) {
+        alert(error.message);
+    }
+});
+
 document.getElementById("btnCerrarVentas").addEventListener("click", () => modalVentas.classList.remove("activo"));
 document.getElementById("btnNuevaVenta").addEventListener("click", () => {
     mostrandoHistorial = false;
+    mostrandoPendientesPago = false;
     ventaActual = null;
     contenidoVenta.style.display = "none";
     formNuevaVenta.reset();
@@ -451,6 +538,76 @@ document.getElementById("btnConcretarVenta").addEventListener("click", async () 
     if (!ventaActual || !confirm("¿Cobrar esta cuenta y descontar el stock?")) return;
     try { const resultado = await respuestaVenta(`/ventas/${ventaActual.idVenta}/concretar`, { method: "POST" }); alert(`${resultado.mensaje} Total: Q${Number(resultado.total).toFixed(2)}`); ventaActual = null; contenidoVenta.style.display = "none"; await cargarVentasAbiertas(); cargarProductos(); } catch (error) { alert(error.message); }
 });
+
+const modalVentaCredito = document.getElementById("modalVentaCredito");
+const formVentaCredito = document.getElementById("formVentaCredito");
+
+document.getElementById("btnVentaPendientePago").addEventListener("click", () => {
+    if (!ventaActual) return;
+    if (!ventaActual.detalles?.length) {
+        alert("Agregue al menos un producto antes de guardar la venta al crédito.");
+        return;
+    }
+    if (!confirm("¿Desea guardar la venta al crédito?")) return;
+
+    document.getElementById("creditoVehiculo").value = ventaActual.vehiculo;
+    document.getElementById("creditoPlaca").value = ventaActual.placa || "";
+    modalVentaCredito.classList.add("activo");
+    document.getElementById("creditoNombreCliente").focus();
+});
+
+function cerrarModalVentaCredito() {
+    modalVentaCredito.classList.remove("activo");
+    formVentaCredito.reset();
+}
+
+document.getElementById("btnCerrarVentaCredito").addEventListener("click", cerrarModalVentaCredito);
+document.getElementById("btnCancelarVentaCredito").addEventListener("click", cerrarModalVentaCredito);
+
+formVentaCredito.addEventListener("submit", async evento => {
+    evento.preventDefault();
+    if (!ventaActual) return;
+
+    const nombreCliente = document.getElementById("creditoNombreCliente").value.trim();
+    const telefonoCliente = document.getElementById("creditoTelefonoCliente").value.trim();
+    const vehiculo = document.getElementById("creditoVehiculo").value.trim();
+    const placa = document.getElementById("creditoPlaca").value.trim();
+    if (nombreCliente.split(/\s+/).length < 2) {
+        alert("Ingrese el nombre y apellido del cliente.");
+        document.getElementById("creditoNombreCliente").focus();
+        return;
+    }
+
+    const botonGuardar = formVentaCredito.querySelector('button[type="submit"]');
+    botonGuardar.disabled = true;
+    try {
+        const resultado = await respuestaVenta(`/ventas/${ventaActual.idVenta}/pendiente-pago`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ nombreCliente, telefonoCliente, vehiculo, placa })
+        });
+        const idVenta = resultado.idVenta;
+        cerrarModalVentaCredito();
+        alert(resultado.mensaje);
+        mostrandoHistorial = false;
+        mostrandoPendientesPago = true;
+        ventaActual = null;
+        formNuevaVenta.style.display = "none";
+        contenidoVenta.style.display = "none";
+        modalVentas.classList.add("modo-historial");
+        document.getElementById("tituloModalVentas").textContent = "Pendientes de pago";
+        document.getElementById("btnNuevaVenta").style.display = "none";
+        filtrosHistorialVentas.style.display = "none";
+        await cargarVentasPendientesPago();
+        if (idVenta) await abrirVenta(idVenta);
+        await cargarProductos();
+    } catch (error) {
+        alert(error.message);
+    } finally {
+        botonGuardar.disabled = false;
+    }
+});
+
 document.getElementById("btnCancelarVenta").addEventListener("click", async () => {
     if (!ventaActual || !confirm("¿Cancelar esta cuenta? No afectara el stock.")) return;
     try { await respuestaVenta(`/ventas/${ventaActual.idVenta}/cancelar`, { method: "POST" }); ventaActual = null; contenidoVenta.style.display = "none"; await cargarVentasAbiertas(); } catch (error) { alert(error.message); }

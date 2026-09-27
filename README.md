@@ -13,6 +13,7 @@ para la logica y comportamiento de la aplicacion css para el estilo del programa
 - Categorias Desactivadas
 - Modulo Ventas
 - Historial de ventas con tickets no facturables e impresion
+- Ventas al credito con modulo de pendientes de pago
 - Modulo Inventario
 
 "Que nos hace falta"
@@ -23,3 +24,6 @@ para la logica y comportamiento de la aplicacion css para el estilo del programa
 - Alertas sobre Stock minimo
 - Modulo de clientes
 - Usuarios, Contraseñas y Permisos
+
+Para habilitar los datos de cliente de las ventas al crédito en una base de datos existente,
+ejecuta `Backend/Scripts/20260927_agregar_datos_ventas_credito.sql`.
