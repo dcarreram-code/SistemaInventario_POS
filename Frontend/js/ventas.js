@@ -272,8 +272,6 @@ document.getElementById("btnHistorialVentas").addEventListener("click", async ()
         filtrosHistorialVentas.style.display = "grid";
     }
 
-    establecerFechasHistorial();
-
     modalVentas.classList.add("activo");
 
     try {
@@ -372,14 +370,6 @@ const historialDesde = document.getElementById("historialDesde");
 const historialHasta = document.getElementById("historialHasta");
 const historialBusqueda = document.getElementById("historialBusqueda");
 
-function establecerFechasHistorial() {
-    const ahora = new Date();
-    const yyyy = ahora.getFullYear();
-    const mm = String(ahora.getMonth() + 1).padStart(2, "0");
-    if (!historialDesde.value) historialDesde.value = `${yyyy}-${mm}-01`;
-    if (!historialHasta.value) historialHasta.value = `${yyyy}-${mm}-${String(ahora.getDate()).padStart(2, "0")}`;
-}
-
 document.getElementById("btnFiltrarHistorial")?.addEventListener("click", async () => {
     if (historialDesde.value && historialHasta.value && historialHasta.value < historialDesde.value) {
         alert("La fecha final no puede ser anterior a la inicial.");
@@ -390,11 +380,8 @@ document.getElementById("btnFiltrarHistorial")?.addEventListener("click", async 
 
 document.getElementById("btnLimpiarHistorial")?.addEventListener("click", async () => {
     historialBusqueda.value = "";
-    const ahora = new Date();
-    const yyyy = ahora.getFullYear();
-    const mm = String(ahora.getMonth() + 1).padStart(2, "0");
-    historialDesde.value = `${yyyy}-${mm}-01`;
-    historialHasta.value = `${yyyy}-${mm}-${String(ahora.getDate()).padStart(2, "0")}`;
+    historialDesde.value = "";
+    historialHasta.value = "";
     try { await cargarHistorialVentas(); } catch (error) { alert(error.message); }
 });
 
@@ -584,4 +571,3 @@ buscarVentaVehiculo.addEventListener("keydown", evento => {
         buscarVentasRegistradas().catch(error => alert(error.message));
     }
 });
-
