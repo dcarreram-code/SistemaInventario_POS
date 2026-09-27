@@ -1722,6 +1722,45 @@ button {
     padding: 18px;
 }
 
+.modal-venta-credito {
+    max-width: 520px;
+}
+
+.form-venta-credito {
+    display: grid;
+    gap: 8px;
+}
+
+.form-venta-credito input {
+    width: 100%;
+    padding: .65rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    font: inherit;
+}
+
+.form-venta-credito .modal-acciones {
+    margin-top: 12px;
+}
+
+.cliente-venta {
+    padding: 10px 12px;
+    background: #fff7ed;
+    border-radius: 7px;
+}
+
+.tarjeta-pendiente-pago {
+    border-left: 4px solid #d97706 !important;
+}
+
+.estado-ticket-pendiente {
+    padding: 8px;
+    color: #92400e;
+    background: #fef3c7;
+    font-weight: 700;
+    text-align: center;
+}
+
 .agregar-producto-venta {
     padding: 14px;
     background: #f3f4f6;

@@ -130,6 +130,8 @@ namespace InventarioAPI.Data
                 entity.HasKey(v => v.IdVenta);
                 entity.Property(v => v.Vehiculo).HasMaxLength(100).IsRequired();
                 entity.Property(v => v.Placa).HasMaxLength(20);
+                entity.Property(v => v.NombreCliente).HasMaxLength(150);
+                entity.Property(v => v.TelefonoCliente).HasMaxLength(20);
                 entity.Property(v => v.Observaciones).HasMaxLength(500);
                 entity.Property(v => v.Estado).HasMaxLength(20).IsRequired();
                 entity.Property(v => v.Total).HasPrecision(10, 2);

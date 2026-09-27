@@ -77,6 +77,10 @@
                     Historial de ventas
                 </button>
 
+                <button id="btnVentasPendientesPago" class="btn-secundario">
+                    Pendientes de pago
+                </button>
+
                 <button id="btnMovimientosInventario" class="btn-secundario">
                     Entradas y movimientos
                 </button>
@@ -328,6 +332,7 @@
 
                     <div id="contenidoVenta" style="display: none;">
                         <h3 id="tituloVenta"></h3>
+                        <p id="clienteVenta" class="cliente-venta" style="display: none;"></p>
                         <div class="agregar-producto-venta">
                             <input id="buscarProductoVenta" placeholder="Buscar producto o equivalencia">
                             <input id="cantidadProductoVenta" type="number" min="1" value="1">
@@ -340,10 +345,34 @@
                             <button id="btnAnularVenta" type="button" class="btn-desactivar" style="display: none;">Anular venta</button>
                             <button id="btnCancelarVenta" type="button" class="btn-secundario">Cancelar cuenta</button>
                             <button id="btnConcretarVenta" type="button" class="btn-principal">Cobrar y descontar stock</button>
+                            <button id="btnVentaPendientePago" type="button" class="btn-secundario">Guardar venta pendiente de pago</button>
                         </div>
                     </div>
                 </section>
             </div>
+        </div>
+    </div>
+
+    <div id="modalVentaCredito" class="modal" aria-labelledby="tituloVentaCredito" aria-modal="true" role="dialog">
+        <div class="modal-contenido modal-venta-credito">
+            <div class="modal-encabezado">
+                <h2 id="tituloVentaCredito">Datos del cliente para venta al crédito</h2>
+                <button id="btnCerrarVentaCredito" type="button" class="btn-cerrar" aria-label="Cerrar">&times;</button>
+            </div>
+            <form id="formVentaCredito" class="form-venta-credito">
+                <label for="creditoNombreCliente">Nombre completo</label>
+                <input id="creditoNombreCliente" maxlength="150" autocomplete="name" required>
+                <label for="creditoTelefonoCliente">Número de teléfono</label>
+                <input id="creditoTelefonoCliente" type="tel" minlength="7" maxlength="20" pattern="[+0-9() -]+" title="Ingrese un número de teléfono válido." autocomplete="tel" required>
+                <label for="creditoVehiculo">Vehículo</label>
+                <input id="creditoVehiculo" maxlength="100" required>
+                <label for="creditoPlaca">Placas del vehículo</label>
+                <input id="creditoPlaca" maxlength="20" required>
+                <div class="modal-acciones">
+                    <button id="btnCancelarVentaCredito" type="button" class="btn-secundario">Cancelar</button>
+                    <button type="submit" class="btn-principal">Guardar venta pendiente de pago</button>
+                </div>
+            </form>
         </div>
     </div>
 
