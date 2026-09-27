@@ -77,6 +77,10 @@
                     Historial de ventas
                 </button>
 
+                <button id="btnMovimientosInventario" class="btn-secundario">
+                    Entradas y movimientos
+                </button>
+
                 <button id="btnReportesVentas" class="btn-secundario">Reporte de ventas</button>
 
                 <button id="btnBuscarVentas" class="btn-secundario" style="display:none;">Buscar ventas</button>
@@ -183,6 +187,104 @@
             </div>
 
             <div id="resultadosBusquedaVentas" class="lista-ventas"></div>
+        </div>
+    </div>
+
+    <div id="modalMovimientosInventario" class="modal">
+        <div class="modal-contenido modal-movimientos">
+            <div class="modal-encabezado">
+                <h2>Entradas y movimientos de inventario</h2>
+                <button id="btnCerrarMovimientosInventario" class="btn-cerrar">&times;</button>
+            </div>
+
+            <form id="formMovimientoInventario" class="form-movimiento">
+                <h3>Registrar movimiento</h3>
+                <div class="fila">
+                    <div class="campo">
+                        <label for="movimientoProducto">Producto</label>
+                        <div class="busqueda-producto-movimiento">
+                            <input id="movimientoProducto" type="search" autocomplete="off" placeholder="Buscar por nombre o código de barras" required>
+                            <input id="movimientoIdProducto" name="IdProducto" type="hidden">
+                            <div id="resultadosProductosMovimiento" class="sugerencias-producto-movimiento"></div>
+                        </div>
+                    </div>
+                    <div class="campo">
+                        <label for="movimientoTipo">Tipo</label>
+                        <select id="movimientoTipo" required>
+                            <option value="Entrada">Entrada de mercancía</option>
+                            <option value="Ajuste">Ajuste de inventario</option>
+                            <option value="Salida">Salida manual</option>
+                            <option value="Devolucion">Devolución</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="fila">
+                    <div class="campo">
+                        <label for="movimientoCantidad">Cantidad</label>
+                        <input id="movimientoCantidad" type="number" min="1" step="1" required>
+                    </div>
+                    <div id="campoDireccionAjuste" class="campo" style="display: none;">
+                        <label for="movimientoDireccionAjuste">Dirección del ajuste</label>
+                        <select id="movimientoDireccionAjuste">
+                            <option value="Incrementar">Incrementar stock</option>
+                            <option value="Disminuir">Disminuir stock</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="campo">
+                    <label for="movimientoDescripcion">Descripción o motivo</label>
+                    <textarea id="movimientoDescripcion" maxlength="250" required></textarea>
+                </div>
+                <div class="modal-acciones">
+                    <button type="submit" class="btn-principal">Registrar movimiento</button>
+                </div>
+            </form>
+
+            <section class="historial-movimientos">
+                <h3>Historial de movimientos</h3>
+                <form id="filtrosMovimientos" class="filtros-movimientos">
+                    <label>Producto
+                        <div class="busqueda-producto-movimiento">
+                            <input id="filtroMovimientoProducto" type="search" autocomplete="off" placeholder="Todos los productos">
+                            <input id="filtroMovimientoIdProducto" name="FiltroIdProducto" type="hidden">
+                            <div id="resultadosFiltroProductoMovimiento" class="sugerencias-producto-movimiento"></div>
+                        </div>
+                    </label>
+                    <label>Tipo
+                        <select id="filtroMovimientoTipo">
+                            <option value="">Todos los tipos</option>
+                            <option value="Entrada">Entrada</option>
+                            <option value="Ajuste">Ajuste</option>
+                            <option value="Salida">Salida</option>
+                            <option value="Devolucion">Devolución</option>
+                            <option value="Venta">Venta</option>
+                            <option value="AnulacionVenta">Anulación de venta</option>
+                        </select>
+                    </label>
+                    <label>Desde <input id="filtroMovimientoDesde" type="date"></label>
+                    <label>Hasta <input id="filtroMovimientoHasta" type="date"></label>
+                    <button type="submit" class="btn-principal">Filtrar</button>
+                    <button id="btnLimpiarFiltrosMovimientos" type="button" class="btn-secundario">Limpiar</button>
+                </form>
+                <div class="tabla-movimientos-contenedor">
+                    <table class="tabla-movimientos">
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Producto</th>
+                                <th>Tipo / origen</th>
+                                <th>Stock anterior</th>
+                                <th>Cantidad</th>
+                                <th>Stock resultante</th>
+                                <th>Descripción / motivo</th>
+                            </tr>
+                        </thead>
+                        <tbody id="listaMovimientosInventario">
+                            <tr><td colspan="7">Cargando movimientos...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
         </div>
     </div>
 
@@ -1327,6 +1429,7 @@
     <script src="js/productos.js"></script>
     <script src="js/equivalencias.js"></script>
     <script src="js/ventas.js"></script>
+    <script src="js/movimientos.js"></script>
     <script src="js/app.js"></script>
 
 </body>
