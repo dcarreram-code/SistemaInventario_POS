@@ -31,64 +31,9 @@
 
         <div class="contenedor encabezado-contenido">
 
-            <h1>Sistema de Inventario</h1>
-
-
-            <div class="acciones-encabezado">
-
-                <button
-                    id="btnCategorias"
-                    class="btn-secundario"
-                >
-                    Categorías
-                </button>
-
-
-                <button
-                    id="btnProductosDesactivados"
-                    class="btn-secundario"
-                >
-                     Productos desactivados
-                </button>
-
-                <button id="btnVolverProductos" class="btn-secundario" style="display: none;">
-                    ← Volver a productos
-                </button>
-
-
-                <button
-                    id="btnNuevoProducto"
-                    class="btn-principal"
-                >
-                    + Nuevo producto
-                </button>
-
-                <button
-                    id="btnVentas"
-                    class="btn-principal"
-                >
-                    Ventas abiertas
-                </button>
-
-                <button
-                    id="btnHistorialVentas"
-                    class="btn-secundario"
-                >
-                    Historial de ventas
-                </button>
-
-                <button id="btnVentasPendientesPago" class="btn-secundario">
-                    Pendientes de pago
-                </button>
-
-                <button id="btnMovimientosInventario" class="btn-secundario">
-                    Entradas y movimientos
-                </button>
-
-                <button id="btnReportesVentas" class="btn-secundario">Reporte de ventas</button>
-
-                <button id="btnBuscarVentas" class="btn-secundario" style="display:none;">Buscar ventas</button>
-
+            <div>
+                <h1>Sistema de Inventario</h1>
+                <p>Panel de control</p>
             </div>
 
         </div>
@@ -103,6 +48,144 @@
 
     <main class="contenedor">
 
+        <section class="seccion-accesos">
+            <div class="titulo-seccion-inicio">
+                <div>
+                    <h2>Accesos rápidos</h2>
+                    <p>Elige un área para continuar.</p>
+                </div>
+            </div>
+
+            <div class="grupos-acceso">
+                <section class="grupo-acceso">
+                    <div class="titulo-grupo-acceso">
+                        <span aria-hidden="true">📦</span>
+                        <div>
+                            <h3>Inventario</h3>
+                            <p>Productos, categorías y existencias</p>
+                        </div>
+                    </div>
+                    <div class="botones-acceso">
+                        <button id="btnNuevoProducto" class="btn-principal">+ Nuevo producto</button>
+                        <button id="btnCategorias" class="btn-secundario">Categorías</button>
+                        <button id="btnProductosDesactivados" class="btn-secundario">Productos desactivados</button>
+                        <button id="btnVolverProductos" class="btn-secundario" style="display: none;">← Volver a productos</button>
+                        <button id="btnMovimientosInventario" class="btn-secundario">Entradas y movimientos</button>
+                    </div>
+                </section>
+
+                <section class="grupo-acceso">
+                    <div class="titulo-grupo-acceso">
+                        <span aria-hidden="true">🧾</span>
+                        <div>
+                            <h3>Ventas</h3>
+                            <p>Cuentas, pagos e informes</p>
+                        </div>
+                    </div>
+                    <div class="botones-acceso">
+                        <button id="btnVentas" class="btn-principal">Ventas abiertas</button>
+                        <button id="btnHistorialVentas" class="btn-secundario">Historial de ventas</button>
+                        <button id="btnVentasPendientesPago" class="btn-secundario">Pendientes de pago</button>
+                        <button id="btnReportesVentas" class="btn-secundario">Reporte de ventas</button>
+                        <button id="btnBuscarVentas" class="btn-secundario" style="display: none;">Buscar ventas</button>
+                    </div>
+                </section>
+            </div>
+        </section>
+
+        <section class="seccion-dashboard" aria-labelledby="tituloDashboard">
+            <div class="encabezado-dashboard">
+                <div>
+                    <p class="sobretitulo-dashboard">RESUMEN DEL NEGOCIO</p>
+                    <h2 id="tituloDashboard">Dashboard</h2>
+                    <p id="fechaDashboard" class="texto-muted-dashboard"></p>
+                </div>
+                <button id="btnActualizarDashboard" type="button" class="btn-secundario">Actualizar datos</button>
+            </div>
+
+            <p id="errorDashboard" class="error-dashboard" role="alert" hidden></p>
+
+            <div class="resumen-dashboard" aria-label="Indicadores del negocio">
+                <article class="tarjeta-indicador">
+                    <span class="icono-indicador" aria-hidden="true">📦</span>
+                    <p>Productos activos</p>
+                    <strong id="productosActivos">—</strong>
+                </article>
+                <article class="tarjeta-indicador">
+                    <span class="icono-indicador" aria-hidden="true">🧾</span>
+                    <p>Ventas realizadas hoy</p>
+                    <strong id="ventasHoy">—</strong>
+                </article>
+                <article class="tarjeta-indicador indicador-destacado">
+                    <span class="icono-indicador" aria-hidden="true">💰</span>
+                    <p>Ingresos de hoy</p>
+                    <strong id="ingresosHoy">—</strong>
+                </article>
+                <article class="tarjeta-indicador indicador-alerta">
+                    <span class="icono-indicador" aria-hidden="true">⚠️</span>
+                    <p>Productos con stock bajo</p>
+                    <strong id="productosStockBajo">—</strong>
+                </article>
+                <article class="tarjeta-indicador">
+                    <span class="icono-indicador" aria-hidden="true">🏷️</span>
+                    <p>Categorías activas</p>
+                    <strong id="categoriasActivas">—</strong>
+                </article>
+                <article class="tarjeta-indicador">
+                    <span class="icono-indicador" aria-hidden="true">🛒</span>
+                    <p>Ventas abiertas</p>
+                    <strong id="ventasAbiertas">—</strong>
+                </article>
+                <article class="tarjeta-indicador">
+                    <span class="icono-indicador" aria-hidden="true">⏳</span>
+                    <p>Ventas pendientes de pago</p>
+                    <strong id="ventasPendientes">—</strong>
+                </article>
+                <article class="tarjeta-indicador indicador-alerta">
+                    <span class="icono-indicador" aria-hidden="true">💳</span>
+                    <p>Saldo pendiente por cobrar</p>
+                    <strong id="saldoPendiente">—</strong>
+                </article>
+            </div>
+
+            <div class="paneles-dashboard">
+                <section class="panel-dashboard">
+                    <div class="encabezado-panel-dashboard">
+                        <div>
+                            <h3>🏆 Productos más vendidos</h3>
+                            <p>Unidades vendidas en ventas completadas o pendientes de pago</p>
+                        </div>
+                    </div>
+                    <div id="dashboardMasVendidos" class="lista-dashboard">
+                        <p class="estado-vacio-dashboard">Cargando productos más vendidos...</p>
+                    </div>
+                </section>
+
+                <section class="panel-dashboard">
+                    <div class="encabezado-panel-dashboard">
+                        <div>
+                            <h3>⚠️ Productos con stock ≤ 5</h3>
+                            <p>Solo productos activos</p>
+                        </div>
+                    </div>
+                    <div id="dashboardStockBajo" class="lista-dashboard">
+                        <p class="estado-vacio-dashboard">Cargando existencias...</p>
+                    </div>
+                </section>
+
+                <section class="panel-dashboard panel-ventas-recientes">
+                    <div class="encabezado-panel-dashboard">
+                        <div>
+                            <h3>🧾 Últimas ventas</h3>
+                            <p>Estado, cantidad de productos y total</p>
+                        </div>
+                    </div>
+                    <div id="dashboardVentasRecientes" class="lista-dashboard">
+                        <p class="estado-vacio-dashboard">Cargando ventas...</p>
+                    </div>
+                </section>
+            </div>
+        </section>
 
         <!-- =================================================
              BARRA DE HERRAMIENTAS
@@ -1501,6 +1584,7 @@
     <script src="js/equivalencias.js"></script>
     <script src="js/ventas.js"></script>
     <script src="js/movimientos.js"></script>
+    <script src="js/dashboard.js"></script>
     <script src="js/app.js"></script>
 
 </body>
