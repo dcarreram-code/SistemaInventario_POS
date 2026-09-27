@@ -309,7 +309,7 @@ namespace InventarioAPI.Controllers
                     mensaje = "Categoría no encontrada."
                 });
             }
-
+//miau
 
             if (categoria.Estado)
             {
