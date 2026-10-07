@@ -83,6 +83,9 @@ namespace InventarioAPI.Data
                 entity.Property(p => p.Imagen)
                     .HasMaxLength(500);
 
+                entity.Property(p => p.StockMinimo)
+                    .HasDefaultValue(5);
+
                 entity.HasOne(p => p.Categoria)
                     .WithMany(c => c.Productos)
                     .HasForeignKey(p => p.IdCategoria)

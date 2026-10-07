@@ -21,6 +21,13 @@ namespace InventarioAPI.DTOs
 
         public int Stock { get; set; }
 
+        [Range(
+            0,
+            int.MaxValue,
+            ErrorMessage = "El stock mínimo no puede ser negativo."
+        )]
+        public int? StockMinimo { get; set; }
+
         [StringLength(50)]
         public string? Bodega { get; set; }
 

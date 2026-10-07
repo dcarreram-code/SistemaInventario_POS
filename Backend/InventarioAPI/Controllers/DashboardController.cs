@@ -31,7 +31,7 @@ namespace InventarioAPI.Controllers
                 IngresosHoy = await _context.PagosVenta
                     .Where(p => p.Fecha >= inicioDia && p.Fecha < finDia)
                     .SumAsync(p => (decimal?)p.Monto) ?? 0,
-                ProductosStockBajo = await productosActivos.CountAsync(p => p.Stock <= 5),
+                ProductosStockBajo = await productosActivos.CountAsync(p => p.Stock <= p.StockMinimo),
                 CategoriasActivas = await _context.Categorias.CountAsync(c => c.Estado),
                 VentasAbiertas = await _context.Ventas.CountAsync(v => v.Estado == "Abierta"),
                 VentasPendientes = await ventasPendientes.CountAsync(),
@@ -41,7 +41,7 @@ namespace InventarioAPI.Controllers
             };
 
             var productosStockBajo = await productosActivos
-                .Where(p => p.Stock <= 5)
+                .Where(p => p.Stock <= p.StockMinimo)
                 .OrderBy(p => p.Stock)
                 .ThenBy(p => p.Nombre)
                 .Select(p => new
@@ -49,7 +49,8 @@ namespace InventarioAPI.Controllers
                     p.IdProducto,
                     p.Nombre,
                     p.CodigoBarras,
-                    p.Stock
+                    p.Stock,
+                    p.StockMinimo
                 })
                 .ToListAsync();
 
