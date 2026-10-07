@@ -25,11 +25,3 @@ para la logica y comportamiento de la aplicacion css para el estilo del programa
 - Modulo de clientes
 - Usuarios, Contraseñas y Permisos
 
-Para agregar el stock minimo a la tabla de productos en una base de datos existente,
-ejecuta `Backend/Scripts/20261006_agregar_stock_minimo_productos.sql`.
-
-Para habilitar los datos de cliente de las ventas al crédito en una base de datos existente,
-ejecuta `Backend/Scripts/20260927_agregar_datos_ventas_credito.sql`.
-
-Para habilitar el registro de pagos y abonos de ventas, ejecuta
-`Backend/Scripts/20260927_crear_pagos_ventas.sql` después de crear el módulo de ventas.
