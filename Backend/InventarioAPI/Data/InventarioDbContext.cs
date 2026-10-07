@@ -24,6 +24,8 @@ namespace InventarioAPI.Data
 
         public DbSet<PagoVenta> PagosVenta { get; set; }
 
+        public DbSet<Cliente> Clientes { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -141,6 +143,25 @@ namespace InventarioAPI.Data
                 entity.Property(v => v.Estado).HasMaxLength(20).IsRequired();
                 entity.Property(v => v.Total).HasPrecision(10, 2);
                 entity.HasIndex(v => v.Estado);
+                entity.HasOne(v => v.Cliente)
+                    .WithMany(c => c.Ventas)
+                    .HasForeignKey(v => v.IdCliente)
+                    .OnDelete(DeleteBehavior.SetNull);
+                entity.HasIndex(v => v.IdCliente);
+            });
+
+            modelBuilder.Entity<Cliente>(entity =>
+            {
+                entity.ToTable("Clientes");
+                entity.HasKey(c => c.IdCliente);
+                entity.Property(c => c.Nombre).HasMaxLength(150).IsRequired();
+                entity.Property(c => c.Telefono).HasMaxLength(20).IsRequired();
+                entity.Property(c => c.DpiNit).HasMaxLength(30);
+                entity.Property(c => c.Direccion).HasMaxLength(250);
+                entity.Property(c => c.Activo).HasDefaultValue(true);
+                entity.Property(c => c.FechaRegistro).HasDefaultValueSql("GETDATE()");
+                entity.HasIndex(c => c.Nombre);
+                entity.HasIndex(c => c.Telefono);
             });
 
             modelBuilder.Entity<DetalleVenta>(entity =>

@@ -8,6 +8,7 @@ const ventaVehiculo = document.getElementById("ventaVehiculo");
 const ventaPlaca = document.getElementById("ventaPlaca");
 const ventaObservaciones = document.getElementById("ventaObservaciones");
 let ventaActual = null;
+let clientesDisponiblesVenta = [];
 let temporizadorBusquedaVenta = null;
 let mostrandoHistorial = false;
 let mostrandoPendientesPago = false;
@@ -28,6 +29,74 @@ async function respuestaVenta(url, opciones = {}) {
         );
     }
     return datos;
+}
+
+async function cargarOpcionesClientesVenta(select, idSeleccionado = null) {
+    clientesDisponiblesVenta = await respuestaVenta("/clientes");
+    select.replaceChildren();
+    const opcionVacia = document.createElement("option");
+    opcionVacia.value = "";
+    opcionVacia.textContent = select.id === "creditoIdCliente"
+        ? "Ingresar datos del cliente manualmente"
+        : "Sin cliente asociado";
+    select.appendChild(opcionVacia);
+
+    clientesDisponiblesVenta.forEach(cliente => {
+        const opcion = document.createElement("option");
+        opcion.value = cliente.idCliente;
+        opcion.textContent = Number(cliente.saldoPendiente) > 0
+            ? `${cliente.nombre} · ${cliente.telefono} · debe Q${Number(cliente.saldoPendiente).toFixed(2)}`
+            : `${cliente.nombre} · ${cliente.telefono}`;
+        select.appendChild(opcion);
+    });
+
+    select.value = idSeleccionado && clientesDisponiblesVenta.some(
+        cliente => cliente.idCliente === Number(idSeleccionado)
+    ) ? String(idSeleccionado) : "";
+    if (select.id === "creditoIdCliente") {
+        actualizarSeleccionClienteCredito(false);
+    } else {
+        mostrarAvisoDeudaCliente(
+            select.value,
+            document.getElementById("avisoDeudaCliente")
+        );
+    }
+}
+
+function mostrarAvisoDeudaCliente(idCliente, aviso) {
+    const cliente = clientesDisponiblesVenta.find(
+        item => item.idCliente === Number(idCliente)
+    );
+    const tieneSaldo = cliente && Number(cliente.saldoPendiente) > 0;
+    aviso.hidden = !tieneSaldo;
+    aviso.textContent = tieneSaldo
+        ? `${cliente.nombre} tiene ${cliente.cuentasPendientes} cuenta(s) pendiente(s), con un saldo total de Q${Number(cliente.saldoPendiente).toFixed(2)}.`
+        : "";
+}
+
+function actualizarSeleccionClienteCredito(limpiarDatos = true) {
+    const selector = document.getElementById("creditoIdCliente");
+    const nombre = document.getElementById("creditoNombreCliente");
+    const telefono = document.getElementById("creditoTelefonoCliente");
+    const cliente = clientesDisponiblesVenta.find(
+        item => item.idCliente === Number(selector.value)
+    );
+    const aviso = document.getElementById("avisoDeudaCredito");
+
+    if (cliente) {
+        nombre.value = cliente.nombre;
+        telefono.value = cliente.telefono;
+        nombre.readOnly = true;
+        telefono.readOnly = true;
+    } else {
+        nombre.readOnly = false;
+        telefono.readOnly = false;
+        if (limpiarDatos) {
+            nombre.value = "";
+            telefono.value = "";
+        }
+    }
+    mostrarAvisoDeudaCliente(selector.value, aviso);
 }
 
 async function cargarVentasAbiertas() {
@@ -632,7 +701,7 @@ document.getElementById("btnVentasPendientesPago").addEventListener("click", asy
 buscarPendientePago.addEventListener("input", mostrarVentasPendientesPago);
 
 document.getElementById("btnCerrarVentas").addEventListener("click", () => modalVentas.classList.remove("activo"));
-document.getElementById("btnNuevaVenta").addEventListener("click", () => {
+document.getElementById("btnNuevaVenta").addEventListener("click", async () => {
     mostrandoHistorial = false;
     mostrandoPendientesPago = false;
     filtrosHistorialVentas.style.display = "none";
@@ -642,6 +711,12 @@ document.getElementById("btnNuevaVenta").addEventListener("click", () => {
     ventaActual = null;
     contenidoVenta.style.display = "none";
     formNuevaVenta.reset();
+    try {
+        await cargarOpcionesClientesVenta(document.getElementById("ventaIdCliente"));
+    } catch (error) {
+        alert(error.message);
+        return;
+    }
     formNuevaVenta.style.display = "grid";
     document.getElementById("ventaVehiculo").focus();
 });
@@ -654,7 +729,12 @@ formNuevaVenta.addEventListener("submit", async evento => {
     try {
         const venta = await respuestaVenta("/ventas", {
             method: "POST", headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ vehiculo: ventaVehiculo.value.trim(), placa: ventaPlaca.value.trim(), observaciones: ventaObservaciones.value.trim() })
+            body: JSON.stringify({
+                vehiculo: ventaVehiculo.value.trim(),
+                placa: ventaPlaca.value.trim(),
+                observaciones: ventaObservaciones.value.trim(),
+                idCliente: Number(document.getElementById("ventaIdCliente").value) || null
+            })
         });
         await abrirVenta(venta.idVenta);
     } catch (error) { alert(error.message); }
@@ -701,7 +781,7 @@ document.getElementById("btnConcretarVenta").addEventListener("click", async () 
 const modalVentaCredito = document.getElementById("modalVentaCredito");
 const formVentaCredito = document.getElementById("formVentaCredito");
 
-document.getElementById("btnVentaPendientePago").addEventListener("click", () => {
+document.getElementById("btnVentaPendientePago").addEventListener("click", async () => {
     if (!ventaActual) return;
     if (!ventaActual.detalles?.length) {
         alert("Agregue al menos un producto antes de guardar la venta al crédito.");
@@ -711,8 +791,21 @@ document.getElementById("btnVentaPendientePago").addEventListener("click", () =>
 
     document.getElementById("creditoVehiculo").value = ventaActual.vehiculo;
     document.getElementById("creditoPlaca").value = ventaActual.placa || "";
+    document.getElementById("creditoNombreCliente").value = ventaActual.nombreCliente || "";
+    document.getElementById("creditoTelefonoCliente").value = ventaActual.telefonoCliente || "";
+    try {
+        await cargarOpcionesClientesVenta(
+            document.getElementById("creditoIdCliente"),
+            ventaActual.idCliente
+        );
+    } catch (error) {
+        alert(error.message);
+        return;
+    }
     modalVentaCredito.classList.add("activo");
-    document.getElementById("creditoNombreCliente").focus();
+    if (!document.getElementById("creditoIdCliente").value) {
+        document.getElementById("creditoNombreCliente").focus();
+    }
 });
 
 function cerrarModalVentaCredito() {
@@ -727,6 +820,7 @@ formVentaCredito.addEventListener("submit", async evento => {
     evento.preventDefault();
     if (!ventaActual) return;
 
+    const idCliente = Number(document.getElementById("creditoIdCliente").value) || null;
     const nombreCliente = document.getElementById("creditoNombreCliente").value.trim();
     const telefonoCliente = document.getElementById("creditoTelefonoCliente").value.trim();
     const vehiculo = document.getElementById("creditoVehiculo").value.trim();
@@ -743,8 +837,9 @@ formVentaCredito.addEventListener("submit", async evento => {
         const resultado = await respuestaVenta(`/ventas/${ventaActual.idVenta}/pendiente-pago`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ nombreCliente, telefonoCliente, vehiculo, placa })
+            body: JSON.stringify({ idCliente, nombreCliente, telefonoCliente, vehiculo, placa })
         });
+
         const idVenta = resultado.idVenta;
         cerrarModalVentaCredito();
         alert(resultado.mensaje);
@@ -768,6 +863,16 @@ formVentaCredito.addEventListener("submit", async evento => {
     } finally {
         botonGuardar.disabled = false;
     }
+});
+
+document.getElementById("ventaIdCliente").addEventListener("change", evento => {
+    mostrarAvisoDeudaCliente(
+        evento.target.value,
+        document.getElementById("avisoDeudaCliente")
+    );
+});
+document.getElementById("creditoIdCliente").addEventListener("change", () => {
+    actualizarSeleccionClienteCredito(true);
 });
 
 document.getElementById("btnCancelarVenta").addEventListener("click", async () => {

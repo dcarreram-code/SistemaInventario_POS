@@ -4,6 +4,8 @@ namespace InventarioAPI.DTOs
 {
     public class CrearVentaPendientePagoDTO
     {
+        public int? IdCliente { get; set; }
+
         [Required, StringLength(150, MinimumLength = 3)]
         public string NombreCliente { get; set; } = string.Empty;
 

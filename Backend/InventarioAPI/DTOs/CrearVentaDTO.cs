@@ -6,6 +6,7 @@ namespace InventarioAPI.DTOs
     {
         [Required, StringLength(100)]
         public string Vehiculo { get; set; } = string.Empty;
+        public int? IdCliente { get; set; }
         [StringLength(20)] public string? Placa { get; set; }
         [StringLength(500)] public string? Observaciones { get; set; }
     }

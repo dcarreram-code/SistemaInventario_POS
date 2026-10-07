@@ -102,6 +102,7 @@
                         <button id="btnVentasPendientesPago" class="btn-secundario">Pendientes de pago</button>
                         <button id="btnReportesVentas" class="btn-secundario">Reporte de ventas</button>
                         <button id="btnBuscarVentas" class="btn-secundario" style="display: none;">Buscar ventas</button>
+                        <button id="btnClientes" class="btn-secundario">Gestión de clientes</button>
                     </div>
                 </section>
             </div>
@@ -462,6 +463,11 @@
 
                 <section class="detalle-venta">
                     <form id="formNuevaVenta" class="form-venta" style="display: none;">
+                        <label for="ventaIdCliente">Cliente (opcional)</label>
+                        <select id="ventaIdCliente">
+                            <option value="">Sin cliente asociado</option>
+                        </select>
+                        <p id="avisoDeudaCliente" class="aviso-deuda-cliente" aria-live="polite" hidden></p>
                         <input id="ventaVehiculo" maxlength="100" placeholder="Vehiculo o cliente" required>
                         <input id="ventaPlaca" maxlength="20" placeholder="Placa- Nombre del Cliente (opcional)">
                         <textarea id="ventaObservaciones" maxlength="500" placeholder="Observaciones (opcional)"></textarea>
@@ -519,6 +525,11 @@
                 <button id="btnCerrarVentaCredito" type="button" class="btn-cerrar" aria-label="Cerrar">&times;</button>
             </div>
             <form id="formVentaCredito" class="form-venta-credito">
+                <label for="creditoIdCliente">Cliente registrado (opcional)</label>
+                <select id="creditoIdCliente">
+                    <option value="">Ingresar datos del cliente manualmente</option>
+                </select>
+                <p id="avisoDeudaCredito" class="aviso-deuda-cliente" aria-live="polite" hidden></p>
                 <label for="creditoNombreCliente">Nombre completo</label>
                 <input id="creditoNombreCliente" maxlength="150" autocomplete="name" required>
                 <label for="creditoTelefonoCliente">Número de teléfono</label>
@@ -530,6 +541,45 @@
                 <div class="modal-acciones">
                     <button id="btnCancelarVentaCredito" type="button" class="btn-secundario">Cancelar</button>
                     <button type="submit" class="btn-principal">Guardar venta pendiente de pago</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="modalClientes" class="modal" aria-labelledby="tituloModalClientes" aria-modal="true" role="dialog">
+        <div class="modal-contenido modal-clientes">
+            <div class="modal-encabezado">
+                <h2 id="tituloModalClientes">Gestión de clientes</h2>
+                <button id="btnCerrarClientes" type="button" class="btn-cerrar" aria-label="Cerrar">&times;</button>
+            </div>
+            <div class="clientes-toolbar">
+                <label for="buscarCliente">Buscar cliente</label>
+                <input id="buscarCliente" type="search" placeholder="Nombre, teléfono o DPI/NIT">
+                <label class="clientes-inactivos">
+                    <input id="mostrarClientesInactivos" type="checkbox">
+                    Incluir inactivos
+                </label>
+                <button id="btnNuevoCliente" type="button" class="btn-principal">+ Registrar cliente</button>
+            </div>
+            <div class="clientes-layout">
+                <div id="listaClientes" class="lista-clientes" aria-live="polite"></div>
+                <section id="detalleCliente" class="detalle-cliente">
+                    <p class="clientes-vacio">Selecciona un cliente para consultar su información e historial.</p>
+                </section>
+            </div>
+            <form id="formCliente" class="form-cliente" style="display: none;">
+                <h3 id="tituloFormularioCliente">Registrar cliente</h3>
+                <label for="clienteNombre">Nombre completo</label>
+                <input id="clienteNombre" maxlength="150" required>
+                <label for="clienteTelefono">Teléfono</label>
+                <input id="clienteTelefono" type="tel" minlength="7" maxlength="20" pattern="[+0-9() -]+" required>
+                <label for="clienteDpiNit">DPI/NIT (opcional)</label>
+                <input id="clienteDpiNit" maxlength="30">
+                <label for="clienteDireccion">Dirección (opcional)</label>
+                <textarea id="clienteDireccion" maxlength="250" rows="2"></textarea>
+                <div class="modal-acciones">
+                    <button id="btnCancelarCliente" type="button" class="btn-secundario">Cancelar</button>
+                    <button type="submit" class="btn-principal">Guardar cliente</button>
                 </div>
             </form>
         </div>
@@ -1670,6 +1720,7 @@
     <script src="js/categorias.js"></script>
     <script src="js/productos.js"></script>
     <script src="js/equivalencias.js"></script>
+    <script src="js/clientes.js"></script>
     <script src="js/ventas.js"></script>
     <script src="js/movimientos.js"></script>
     <script src="js/dashboard.js"></script>
