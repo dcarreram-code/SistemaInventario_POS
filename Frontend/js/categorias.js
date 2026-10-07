@@ -815,6 +815,36 @@ function mostrarCategoriasDesactivadas(lista) {
     });
 }
 
+
+// ======================================================
+// BOTÓN REACTIVAR CATEGORÍA
+// ======================================================
+
+listaCategorias.addEventListener(
+    "click",
+    function (evento) {
+
+        const boton =
+            evento.target.closest(
+                ".btn-reactivar-categoria"
+            );
+
+
+        if (!boton) {
+            return;
+        }
+
+
+        const id =
+            boton.dataset.id;
+
+
+        reactivarCategoria(id);
+
+    }
+);
+
+
 // ======================================================
 // REACTIVAR CATEGORÍA
 // ======================================================
@@ -881,32 +911,6 @@ async function reactivarCategoria(id) {
 }
 
 
-// ======================================================
-// BOTÓN REACTIVAR CATEGORÍA
-// ======================================================
 
-listaCategorias.addEventListener(
-    "click",
-    function (evento) {
-
-        const boton =
-            evento.target.closest(
-                ".btn-reactivar-categoria"
-            );
-
-
-        if (!boton) {
-            return;
-        }
-
-
-        const id =
-            boton.dataset.id;
-
-
-        reactivarCategoria(id);
-
-    }
-);
 
 
