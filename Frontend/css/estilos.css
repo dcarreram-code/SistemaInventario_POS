@@ -806,11 +806,55 @@ main {
 .pagos-ticket > strong { display: block; margin-bottom: .35rem; }
 .pagos-ticket p { margin: .2rem 0; }
 
+.modal-clientes { max-width: 1050px; }
+.clientes-toolbar { display: grid; grid-template-columns: minmax(180px, 1fr) auto auto; gap: .65rem 1rem; align-items: end; margin-bottom: 1rem; }
+.clientes-toolbar > label:first-child { grid-column: 1 / -1; font-weight: 600; }
+.clientes-toolbar input[type="search"] { width: 100%; padding: .65rem .75rem; border: 1px solid var(--border-color); border-radius: var(--radius-sm); font: inherit; }
+.clientes-inactivos { display: flex; align-items: center; gap: .4rem; white-space: nowrap; }
+.clientes-inactivos input { width: auto; }
+.clientes-layout { display: grid; grid-template-columns: minmax(220px, .75fr) minmax(0, 1.5fr); gap: 1rem; min-height: 300px; }
+.lista-clientes { display: grid; align-content: start; gap: .5rem; max-height: 55vh; overflow-y: auto; }
+.tarjeta-cliente { display: grid; gap: .15rem; justify-items: start; padding: .75rem; text-align: left; background: var(--bg-main); border: 1px solid var(--border-color); }
+.tarjeta-cliente span, .tarjeta-cliente small { color: var(--text-muted); }
+.tarjeta-cliente.seleccionado { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(220, 38, 38, .1); }
+.detalle-cliente { min-width: 0; }
+.detalle-cliente-encabezado { position: relative; padding: .9rem; background: var(--bg-main); border: 1px solid var(--border-color); border-radius: var(--radius-sm); }
+.detalle-cliente-encabezado h3 { margin: 0 0 .5rem; }
+.detalle-cliente-encabezado p { margin: .2rem 0; color: var(--text-muted); }
+.estado-cliente { display: inline-block; margin-top: .5rem; padding: .2rem .55rem; border-radius: 999px; background: #f1f5f9; font-size: .8rem; }
+.estado-cliente.activo { color: #166534; background: #dcfce7; }
+.saldo-cliente { display: grid; grid-template-columns: 1fr auto; gap: .2rem .75rem; align-items: center; margin: .75rem 0; padding: .85rem; border: 1px solid var(--border-color); border-radius: var(--radius-sm); }
+.saldo-cliente strong { color: var(--primary); font-size: 1.1rem; }
+.saldo-cliente small { grid-column: 1 / -1; color: var(--text-muted); }
+.acciones-cliente { display: flex; gap: .5rem; margin-bottom: 1rem; }
+.detalle-cliente h4 { margin: 1rem 0 .5rem; }
+.historial-cliente { display: grid; gap: .45rem; max-height: 35vh; overflow-y: auto; }
+.fila-historial-cliente { display: grid; grid-template-columns: 1fr auto; gap: .25rem .75rem; align-items: center; padding: .7rem; background: var(--bg-main); border: 1px solid var(--border-color); border-radius: var(--radius-sm); }
+.fila-historial-cliente > div { display: grid; gap: .15rem; }
+.fila-historial-cliente span, .fila-historial-cliente small { color: var(--text-muted); font-size: .82rem; }
+.fila-historial-cliente > small { grid-column: 1 / -1; }
+.clientes-vacio, .clientes-error { padding: 1rem; color: var(--text-muted); text-align: center; }
+.clientes-error { color: var(--danger); }
+.form-cliente { display: grid; gap: .55rem; margin-top: 1rem; padding: 1rem; border: 1px solid var(--border-color); border-radius: var(--radius-sm); background: var(--bg-main); }
+.form-cliente h3 { margin: 0 0 .35rem; }
+.form-cliente input, .form-cliente textarea, .form-venta select, .form-venta-credito select { width: 100%; box-sizing: border-box; padding: .65rem; border: 1px solid var(--border-color); border-radius: var(--radius-sm); font: inherit; }
+.aviso-deuda-cliente { margin: 0; padding: .65rem .75rem; border: 1px solid #f59e0b; border-radius: var(--radius-sm); color: #854d0e; background: #fef3c7; font-size: .9rem; }
+.form-venta-credito input[readonly] { background: var(--bg-main); }
+
 .resultado-venta-busqueda {
     width: 100%;
     border: 1px solid var(--border-color);
     text-align: left;
     cursor: pointer;
+}
+
+@media (max-width: 700px) {
+    .clientes-toolbar { grid-template-columns: 1fr 1fr; }
+    .clientes-toolbar > label:first-child { grid-column: 1 / -1; }
+    .clientes-toolbar > input[type="search"] { grid-column: 1 / -1; }
+    .clientes-toolbar > button { grid-column: 1 / -1; }
+    .clientes-layout { grid-template-columns: 1fr; }
+    .lista-clientes { max-height: 30vh; }
 }
 .resultado-venta-busqueda:hover {
     border-color: #cbd5e1;

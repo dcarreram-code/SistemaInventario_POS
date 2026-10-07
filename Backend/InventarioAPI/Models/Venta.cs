@@ -3,6 +3,8 @@ namespace InventarioAPI.Models
     public class Venta
     {
         public int IdVenta { get; set; }
+        public int? IdCliente { get; set; }
+        public Cliente? Cliente { get; set; }
         public string Vehiculo { get; set; } = string.Empty;
         public string? Placa { get; set; }
         public string? NombreCliente { get; set; }

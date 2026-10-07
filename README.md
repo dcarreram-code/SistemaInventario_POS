@@ -17,11 +17,21 @@ para la logica y comportamiento de la aplicacion css para el estilo del programa
 - Modulo Inventario
 - Movimientos e ingresos de inventario
 - Dashboard con alertas de stock minimo configurable por producto (5 por defecto)
+- Gestión de clientes con historial de ventas y saldos pendientes
 
 
 "Que nos hace falta"
 
-
-- Modulo de clientes
 - Usuarios, Contraseñas y Permisos
 
+
+## Módulo de clientes
+
+Antes de usar el módulo por primera vez, ejecutar `Backend/Scripts/20261006_crear_modulo_clientes.sql`
+en la base de datos. El script crea la tabla y la relación opcional con ventas, y asocia
+los clientes identificados en ventas anteriores a partir de su nombre y teléfono.
+
+Desde la aplicación se pueden registrar, buscar, editar, desactivar y reactivar clientes,
+consultar su historial y ver el saldo acumulado de sus ventas pendientes. Al iniciar una
+venta o guardar una venta al crédito se puede seleccionar un cliente existente; si tiene
+cuentas pendientes, se muestra el saldo antes de continuar.

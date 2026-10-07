@@ -21,6 +21,7 @@ namespace InventarioAPI.Controllers
             .OrderByDescending(v => v.FechaApertura)
             .Select(v => new {
                 v.IdVenta, v.Vehiculo, v.Placa, v.Observaciones, v.FechaApertura,
+                v.IdCliente,
                 Total = v.Detalles.Sum(d => (decimal?)d.Subtotal) ?? 0,
                 CantidadProductos = v.Detalles.Sum(d => (int?)d.Cantidad) ?? 0
             }).ToListAsync());
@@ -32,6 +33,7 @@ namespace InventarioAPI.Controllers
             .Select(v => new
             {
                 v.IdVenta,
+                v.IdCliente,
                 v.NombreCliente,
                 v.TelefonoCliente,
                 v.Vehiculo,
@@ -76,6 +78,7 @@ namespace InventarioAPI.Controllers
                 .Select(v => new
                 {
                     v.IdVenta,
+                    v.IdCliente,
                     v.Vehiculo,
                     v.Placa,
                     v.Estado,
@@ -169,6 +172,7 @@ namespace InventarioAPI.Controllers
                 .Select(v => new
                 {
                     v.IdVenta,
+                    v.IdCliente,
                     v.Vehiculo,
                     v.Placa,
                     v.NombreCliente,
@@ -208,7 +212,19 @@ namespace InventarioAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> Crear(CrearVentaDTO dto)
         {
+            Cliente? cliente = null;
+            if (dto.IdCliente.HasValue)
+            {
+                cliente = await _context.Clientes
+                    .FirstOrDefaultAsync(c => c.IdCliente == dto.IdCliente && c.Activo);
+                if (cliente == null)
+                    return BadRequest(new { mensaje = "El cliente seleccionado no existe o está inactivo." });
+            }
+
             var venta = new Venta {
+                IdCliente = cliente?.IdCliente,
+                NombreCliente = cliente?.Nombre,
+                TelefonoCliente = cliente?.Telefono,
                 Vehiculo = dto.Vehiculo.Trim(), Placa = dto.Placa?.Trim(),
                 Observaciones = dto.Observaciones?.Trim(), FechaApertura = DateTime.Now
             };
@@ -314,11 +330,21 @@ namespace InventarioAPI.Controllers
         [HttpPost("{id}/pendiente-pago")]
         public async Task<IActionResult> GuardarPendientePago(int id, CrearVentaPendientePagoDTO dto)
         {
-            var nombreCliente = dto.NombreCliente.Trim();
-            var telefonoCliente = dto.TelefonoCliente.Trim();
+            Cliente? cliente = null;
+            if (dto.IdCliente.HasValue)
+            {
+                cliente = await _context.Clientes
+                    .FirstOrDefaultAsync(c => c.IdCliente == dto.IdCliente && c.Activo);
+                if (cliente == null)
+                    return BadRequest(new { mensaje = "El cliente seleccionado no existe o está inactivo." });
+            }
+
+            var nombreCliente = cliente?.Nombre ?? dto.NombreCliente.Trim();
+            var telefonoCliente = cliente?.Telefono ?? dto.TelefonoCliente.Trim();
             var vehiculo = dto.Vehiculo.Trim();
             var placa = dto.Placa.Trim();
-            if (nombreCliente.Split(' ', StringSplitOptions.RemoveEmptyEntries).Length < 2)
+            if (cliente == null &&
+                nombreCliente.Split(' ', StringSplitOptions.RemoveEmptyEntries).Length < 2)
                 return BadRequest(new { mensaje = "Ingrese el nombre completo del cliente." });
             if (telefonoCliente.Count(char.IsDigit) < 7 ||
                 telefonoCliente.Any(caracter =>
@@ -340,6 +366,7 @@ namespace InventarioAPI.Controllers
 
             venta.NombreCliente = nombreCliente;
             venta.TelefonoCliente = telefonoCliente;
+            venta.IdCliente = cliente?.IdCliente;
             venta.Vehiculo = vehiculo;
             venta.Placa = placa;
             venta.Total = venta.Detalles.Sum(d => d.Subtotal);
