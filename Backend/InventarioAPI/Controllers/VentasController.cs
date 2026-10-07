@@ -230,7 +230,17 @@ namespace InventarioAPI.Controllers
             };
             _context.Ventas.Add(venta);
             await _context.SaveChangesAsync();
-            return CreatedAtAction(nameof(Obtener), new { id = venta.IdVenta }, venta);
+            return CreatedAtAction(nameof(Obtener), new { id = venta.IdVenta }, new
+            {
+                venta.IdVenta,
+                venta.IdCliente,
+                venta.Vehiculo,
+                venta.Placa,
+                venta.NombreCliente,
+                venta.TelefonoCliente,
+                venta.Estado,
+                venta.FechaApertura
+            });
         }
 
         [HttpPost("{id}/detalles")]
@@ -373,6 +383,29 @@ namespace InventarioAPI.Controllers
             venta.Estado = "PendientePago";
             venta.FechaCierre = DateTime.Now;
 
+            if (cliente == null)
+            {
+                cliente = await _context.Clientes.FirstOrDefaultAsync(c =>
+                    c.Nombre == nombreCliente && c.Telefono == telefonoCliente);
+                if (cliente == null)
+                {
+                    cliente = new Cliente
+                    {
+                        Nombre = nombreCliente,
+                        Telefono = telefonoCliente,
+                        Activo = true,
+                        FechaRegistro = DateTime.Now
+                    };
+                    _context.Clientes.Add(cliente);
+                    await _context.SaveChangesAsync();
+                }
+                else
+                {
+                    cliente.Activo = true;
+                }
+            }
+
+            venta.IdCliente = cliente.IdCliente;
             await _context.SaveChangesAsync();
             await transaccion.CommitAsync();
             return Ok(new
