@@ -63,18 +63,23 @@ function mostrarProductosStockBajo(productos) {
     if (!productos.length) {
         const vacio = document.createElement("div");
         vacio.className = "estado-stock-ok";
-        vacio.innerHTML = "<strong>Inventario estable</strong><span>No hay productos con stock de 5 o menos.</span>";
+        vacio.innerHTML = "<strong>Inventario estable</strong><span>No hay productos por debajo de su stock mínimo configurado.</span>";
         contenedor.appendChild(vacio);
         return;
     }
 
     productos.forEach(producto => {
         const stock = Number(producto.stock);
-        const severidad = stock <= 2 ? "critico" : stock <= 5 ? "alerta" : "normal";
+        const stockMinimo = Number(producto.stockMinimo);
+        const severidad = stock <= Math.floor(stockMinimo / 2) ? "critico" : "alerta";
 
         const detalle = document.createElement("div");
         detalle.className = "detalle-stock-dashboard";
         detalle.appendChild(crearTextoDashboard("strong", producto.nombre));
+        detalle.appendChild(crearTextoDashboard(
+            "span",
+            `Mínimo: ${stockMinimo} ${stockMinimo === 1 ? "unidad" : "unidades"}`
+        ));
         if (producto.codigoBarras) {
             detalle.appendChild(crearTextoDashboard("span", producto.codigoBarras));
         }

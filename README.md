@@ -16,15 +16,17 @@ para la logica y comportamiento de la aplicacion css para el estilo del programa
 - Ventas al credito con modulo de pendientes de pago
 - Modulo Inventario
 - Movimientos e ingresos de inventario
-- Dashboard mas limpio e informativo
+- Dashboard con alertas de stock minimo configurable por producto (5 por defecto)
 
 
 "Que nos hace falta"
 
 
-- Alertas sobre Stock minimo
 - Modulo de clientes
 - Usuarios, Contraseñas y Permisos
+
+Para agregar el stock minimo a la tabla de productos en una base de datos existente,
+ejecuta `Backend/Scripts/20261006_agregar_stock_minimo_productos.sql`.
 
 Para habilitar los datos de cliente de las ventas al crédito en una base de datos existente,
 ejecuta `Backend/Scripts/20260927_agregar_datos_ventas_credito.sql`.

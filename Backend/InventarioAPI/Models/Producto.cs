@@ -22,6 +22,8 @@ namespace InventarioAPI.Models
 
         public int Stock { get; set; }
 
+        public int StockMinimo { get; set; } = 5;
+
         public string? Bodega { get; set; }
 
         public string? Estanteria { get; set; }

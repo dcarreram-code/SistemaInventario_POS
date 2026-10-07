@@ -195,6 +195,11 @@ async function abrirDetalleProducto(id) {
         agregarCampoDetalle(campos, "Existencias", `${producto.stock} unidades`);
         agregarCampoDetalle(
             campos,
+            "Stock mínimo",
+            `${producto.stockMinimo ?? 5} unidades`
+        );
+        agregarCampoDetalle(
+            campos,
             "Ubicación",
             [producto.bodega, producto.estanteria, producto.fila]
                 .filter(Boolean)
@@ -467,6 +472,11 @@ const editarStock =
         "editarStock"
     );
 
+const editarStockMinimo =
+    document.getElementById(
+        "editarStockMinimo"
+    );
+
 const editarBodega =
     document.getElementById(
         "editarBodega"
@@ -564,6 +574,9 @@ async function abrirModalEditar(id) {
 
         editarStock.value =
             producto.stock;
+
+        editarStockMinimo.value =
+            producto.stockMinimo ?? 5;
 
         editarBodega.value =
             producto.bodega ?? "";
@@ -973,6 +986,11 @@ formEditarProducto.addEventListener(
                 editarStock.value
             );
 
+        const stockMinimo =
+            Number(
+                editarStockMinimo.value
+            );
+
         const bodega =
             editarBodega.value.trim();
 
@@ -1068,6 +1086,16 @@ formEditarProducto.addEventListener(
                 "El stock debe ser un número entero mayor o igual a 0."
             );
 
+            return;
+        }
+
+        if (
+            !Number.isInteger(stockMinimo) ||
+            stockMinimo < 0
+        ) {
+            alert(
+                "El stock mínimo debe ser un número entero mayor o igual a 0."
+            );
             return;
         }
 
@@ -1174,6 +1202,11 @@ formEditarProducto.addEventListener(
         datosFormulario.append(
             "Stock",
             stock
+        );
+
+        datosFormulario.append(
+            "StockMinimo",
+            stockMinimo
         );
 
         datosFormulario.append(
@@ -1962,6 +1995,16 @@ formProducto.addEventListener(
                 ).value
             );
 
+        const valorStockMinimo =
+            document.getElementById(
+                "stockMinimo"
+            ).value.trim();
+
+        const stockMinimo =
+            valorStockMinimo === ""
+                ? 5
+                : Number(valorStockMinimo);
+
         const bodega =
             document.getElementById(
                 "bodega"
@@ -2111,6 +2154,16 @@ formProducto.addEventListener(
             return;
         }
 
+        if (
+            !Number.isInteger(stockMinimo) ||
+            stockMinimo < 0
+        ) {
+            alert(
+                "El stock mínimo debe ser un número entero mayor o igual a 0."
+            );
+            return;
+        }
+
 
         // --------------------------------------------------
         // DESCRIPCIÓN
@@ -2221,6 +2274,11 @@ formProducto.addEventListener(
         datosFormulario.append(
             "Stock",
             stock
+        );
+
+        datosFormulario.append(
+            "StockMinimo",
+            stockMinimo
         );
 
         datosFormulario.append(

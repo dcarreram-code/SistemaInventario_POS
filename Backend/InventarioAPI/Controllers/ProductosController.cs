@@ -40,6 +40,7 @@ public async Task<IActionResult> ObtenerProductos()
             Descripcion = p.Descripcion,
             Imagen = p.Imagen,
             Stock = p.Stock,
+            StockMinimo = p.StockMinimo,
             Bodega = p.Bodega,
             Estanteria = p.Estanteria,
             Fila = p.Fila,
@@ -78,6 +79,7 @@ public async Task<IActionResult> ObtenerProducto(int id)
         Descripcion = producto.Descripcion,
         Imagen = producto.Imagen,
         Stock = producto.Stock,
+        StockMinimo = producto.StockMinimo,
         Bodega = producto.Bodega,
         Estanteria = producto.Estanteria,
         Fila = producto.Fila,
@@ -159,6 +161,7 @@ public async Task<IActionResult> BuscarProductos(
             Descripcion = p.Descripcion,
             Imagen = p.Imagen,
             Stock = p.Stock,
+            StockMinimo = p.StockMinimo,
             Bodega = p.Bodega,
             Estanteria = p.Estanteria,
             Fila = p.Fila,
@@ -251,6 +254,11 @@ public async Task<IActionResult> ActualizarProducto(
 
     producto.Stock =
         productoDTO.Stock;
+
+    if (productoDTO.StockMinimo.HasValue)
+    {
+        producto.StockMinimo = productoDTO.StockMinimo.Value;
+    }
 
     producto.Bodega =
         productoDTO.Bodega?.Trim();
@@ -476,6 +484,7 @@ public async Task<IActionResult> ActualizarProducto(
                 Descripcion = productoDTO.Descripcion,
                 Imagen = rutaImagen,
                 Stock = productoDTO.Stock,
+                StockMinimo = productoDTO.StockMinimo ?? 5,
                 Bodega = productoDTO.Bodega?.Trim(),
                 Estanteria = productoDTO.Estanteria?.Trim(),
                 Fila = productoDTO.Fila?.Trim(),
